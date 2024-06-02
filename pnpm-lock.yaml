@@ -8,6 +8,9 @@ dependencies:
   '@babel/runtime':
     specifier: ^7.18.6
     version: 7.24.6
+  '@lezer/lr':
+    specifier: ^1.4.1
+    version: 1.4.1
 
 devDependencies:
   '@jcoreio/eslint-plugin-implicit-dependencies':
@@ -31,6 +34,12 @@ devDependencies:
   '@jcoreio/toolchain-typescript':
     specifier: ^4.5.5
     version: 4.5.5(eslint@8.57.0)(typescript@5.4.5)
+  '@lezer/common':
+    specifier: ^1.2.1
+    version: 1.2.1
+  '@lezer/generator':
+    specifier: ^1.7.0
+    version: 1.7.0
   '@typescript-eslint/eslint-plugin':
     specifier: ^7.6.0
     version: 7.9.0(@typescript-eslint/parser@7.10.0)(eslint@8.57.0)(typescript@5.4.5)
@@ -63,6 +72,7 @@ packages:
   /@babel/cli@7.24.5(@babel/core@7.24.6):
     resolution: {integrity: sha512-2qg1mYtJRsOOWF6IUwLP5jI42P8Cc0hQ5TmnjLrik/4DKouO8dFJN80HEz81VmVeUs97yuuf3vQ/9j7Elrcjlg==}
     engines: {node: '>=6.9.0'}
+    hasBin: true
     peerDependencies:
       '@babel/core': ^7.0.0-0
     dependencies:
@@ -1561,6 +1571,22 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
+  /@lezer/common@1.2.1:
+    resolution: {integrity: sha512-yemX0ZD2xS/73llMZIK6KplkjIjf2EvAHcinDi/TfJ9hS25G0388+ClHt6/3but0oOxinTcQHJLDXh6w1crzFQ==}
+
+  /@lezer/generator@1.7.0:
+    resolution: {integrity: sha512-IJ16tx3biLKlCXUzcK4v8S10AVa2BSM2rB12rtAL6f1hL2TS/HQQlGCoWRvanlL2J4mCYEEIv9uG7n4kVMkVDA==}
+    hasBin: true
+    dependencies:
+      '@lezer/common': 1.2.1
+      '@lezer/lr': 1.4.1
+    dev: true
+
+  /@lezer/lr@1.4.1:
+    resolution: {integrity: sha512-CHsKq8DMKBf9b3yXPDIU4DbH+ZJd/sJdYOW2llbW/HudP5u0VS6Bfq1hLYfgU7uAYGFIyGGQIsSOXGPEErZiJw==}
+    dependencies:
+      '@lezer/common': 1.2.1
+
   /@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3:
     resolution: {integrity: sha512-s88O1aVtXftvp5bCPB7WnmXc5IwOZZ7YPuwNPt+GtOOXpPvad1LfbmjYv+qII7zP6RU2QGnqve27dnLycEnyEQ==}
     requiresBuild: true
@@ -2295,6 +2321,7 @@ packages:
 
   /eslint-config-prettier@8.10.0(eslint@8.57.0):
     resolution: {integrity: sha512-SM8AMJdeQqRYT9O9zguiruQZaN7+z+E4eAP9oiLNGKMtomwaB1E9dcgUD6ZAn/eQAb52USbvezbiljfZUhbJcg==}
+    hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
     dependencies:
@@ -3941,6 +3968,7 @@ packages:
 
   /update-browserslist-db@1.0.16(browserslist@4.23.0):
     resolution: {integrity: sha512-KVbTxlBYlckhF5wgfyZXTWnMn7MMZjMu9XG8bPlliUOP9ThaF4QnhP8qrjrH7DRzHfSk0oQv1wToW+iA5GajEQ==}
+    hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
     dependencies:
