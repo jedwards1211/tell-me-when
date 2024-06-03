@@ -10,4 +10,4 @@ export const
   MonthName = 15,
   MonthNumber = 36,
   TwoDigitYear = 58,
-  DayOfMonthYear = 95
+  DayOfMonthYear = 103

@@ -10,35 +10,13 @@ YearMonthDay<sep, month> {
   )?
 }
 
-MonthNameDayYear<sep1, sep2> {
-  Month { MonthName ~m }
+MonthDayYear<month, sep1, sep2> {
+  Month { month ~m }
   (
-    sep1?
+    sep1
     Day { NumericDayOfMonth | DayOfMonthOrdinal }
     (
-      sep2?
-      Year { FullYear | TwoDigitYear }
-    )?
-  )?
-}
-MonthNameMaybeDotDayYear<sep1, sep2> {
-  Month { MonthNameMaybeDot ~m }
-  (
-    sep1?
-    Day { NumericDayOfMonth | DayOfMonthOrdinal }
-    (
-      sep2?
-      Year { FullYear | TwoDigitYear }
-    )?
-  )?
-}
-MonthNumberDayYear<sep> {
-  Month { MonthNumber ~d }
-  (
-    sep
-    Day { NumericDayOfMonth | DayOfMonthOrdinal }
-    (
-      sep
+      sep2
       Year { FullYear | TwoDigitYear }
     )?
   )?
@@ -82,16 +60,19 @@ DayOfMonthYear {
   | YearMonthDay<'_', MonthNumber>
   | YearMonthDay<'/', MonthNumber>
   | YearMonthDay<space, MonthNumber>
-  | MonthNameDayYear<'.', '.'>
-  | MonthNameMaybeDotDayYear<'-', '-'>
-  | MonthNameMaybeDotDayYear<'_', '_'>
-  | MonthNameMaybeDotDayYear<'/', '/'>
-  | MonthNameMaybeDotDayYear<space, space | (space? ',' space?)>
-  | MonthNumberDayYear<'.'>
-  | MonthNumberDayYear<'-'>
-  | MonthNumberDayYear<'_'>
-  | MonthNumberDayYear<'/'>
-  | MonthNumberDayYear<space>
+  | MonthDayYear<MonthName, '.', '.'>
+  | MonthDayYear<MonthNameMaybeDot, '', ''>
+  | MonthDayYear<MonthNameMaybeDot, '-', '-'>
+  | MonthDayYear<MonthNameMaybeDot, '-', '-'>
+  | MonthDayYear<MonthNameMaybeDot, '_', '_'>
+  | MonthDayYear<MonthNameMaybeDot, '/', '/'>
+  | MonthDayYear<MonthNameMaybeDot, space, space | (space? ',' space?)>
+  | MonthDayYear<MonthNumber, '', ''>
+  | MonthDayYear<MonthNumber, '.', '.'>
+  | MonthDayYear<MonthNumber, '-', '-'>
+  | MonthDayYear<MonthNumber, '_', '_'>
+  | MonthDayYear<MonthNumber, '/', '/'>
+  | MonthDayYear<MonthNumber, space, space>
   | DayOfMonthYear
   | DayMonthYear<'', MonthNameMaybeDot>
   | DayMonthYear<'.', MonthName>

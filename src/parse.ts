@@ -47,9 +47,7 @@ function convertNode(input: string, node: SyntaxNode | null): ParseResult {
         ],
       ]
     }
-    case 'MonthDayYear':
-    case 'MonthNameDayYear':
-    case 'MonthNameMaybeDotDayYear': {
+    case 'MonthDayYear': {
       const month = parseMonth(input, node.getChild('Month'))
       const day = parseDay(input, node.getChild('Day'))
       const year = parseYear(input, node.getChild('Year'))
