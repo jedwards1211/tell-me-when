@@ -2,8 +2,12 @@
 export const
   DateTimeExpression = 1,
   FullYear = 4,
-  MonthName = 6,
-  NumericDayOfMonth = 8,
-  DayOfMonthOrdinal = 9,
-  MonthNumber = 11,
-  TwoDigitYear = 17
+  MonthNameMaybeDot = 6,
+  MonthNameAbbrev = 7,
+  MonthNameFullExceptMay = 8,
+  NumericDayOfMonth = 10,
+  DayOfMonthOrdinal = 11,
+  MonthName = 15,
+  MonthNumber = 36,
+  TwoDigitYear = 58,
+  DayOfMonthYear = 95

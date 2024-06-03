@@ -26,7 +26,9 @@ function indent(s: string) {
 
 for (const input of [
   'aug 20',
+  'aug.20',
   '20 aug',
+  '20.aug',
   '20th aug',
   'aug',
   'aug 02',
@@ -59,6 +61,13 @@ for (const input of [
   '2012/13',
   '12th of march',
   '8/3/01',
+  '8.3.01',
+  '20 of aug.2023',
+  '20 of aug.,2023',
+  '2012-aug/3',
+  '2012/aug/3',
+  '2012/aug-3',
+  '2012-aug-3',
 ]) {
   const tree = parser.parse(input)
   // @ts-expect-error no type defs
