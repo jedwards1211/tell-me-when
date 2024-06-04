@@ -6,7 +6,7 @@ export const parseTestcases: [string, ParseResult][] = [
     [['setYear', 2021], ['startOfYear'], ['makeInterval', ['addYears', 1]]],
   ],
   ...['', '.', '-', '_', '/', ' '].flatMap((sep): [string, ParseResult][] =>
-    ['aug', 'august', ...(sep === '.' ? [] : ['aug.'])].flatMap((month) => [
+    ['aug', 'august', ...(sep === ' ' ? ['aug.'] : [])].flatMap((month) => [
       [
         `2021${sep}${month}`,
         [
@@ -105,25 +105,29 @@ export const parseTestcases: [string, ParseResult][] = [
           ['makeInterval', ['addDays', 1]],
         ],
       ],
-      [
-        `${day} of ${month}`,
-        [
-          ['setMonth', 7],
-          ['setDate', parseInt(day)],
-          ['startOfDay'],
-          ['makeInterval', ['addDays', 1]],
-        ],
-      ],
-      [
-        `${day} of ${month}, 2021`,
-        [
-          ['setYear', 2021],
-          ['setMonth', 7],
-          ['setDate', parseInt(day)],
-          ['startOfDay'],
-          ['makeInterval', ['addDays', 1]],
-        ],
-      ],
+      ...(/\D/.test(day)
+        ? ([
+            [
+              `${day} of ${month}`,
+              [
+                ['setMonth', 7],
+                ['setDate', parseInt(day)],
+                ['startOfDay'],
+                ['makeInterval', ['addDays', 1]],
+              ],
+            ],
+            [
+              `${day} of ${month}, 2021`,
+              [
+                ['setYear', 2021],
+                ['setMonth', 7],
+                ['setDate', parseInt(day)],
+                ['startOfDay'],
+                ['makeInterval', ['addDays', 1]],
+              ],
+            ],
+          ] as [string, ParseResult][])
+        : []),
       [
         `${day} ${month}`,
         [
@@ -174,32 +178,33 @@ export const parseTestcases: [string, ParseResult][] = [
         ],
       ],
     ]),
-    ...['', ...(month.endsWith('.') ? [] : ['.']), '-', '_', '/', ' '].flatMap(
-      (sep): [string, ParseResult][] => [
+    ...[
+      '',
+      ...(month.endsWith('.') ? [' '] : ['.', '-', '_', '/', ' ']),
+    ].flatMap((sep): [string, ParseResult][] => [
+      [
+        `${month}${sep}6`,
         [
-          `${month}${sep}6`,
-          [
-            ['setMonth', 7],
-            ['setDate', 6],
-            ['startOfDay'],
-            ['makeInterval', ['addDays', 1]],
-          ],
+          ['setMonth', 7],
+          ['setDate', 6],
+          ['startOfDay'],
+          ['makeInterval', ['addDays', 1]],
         ],
-        ...(sep === ''
-          ? []
-          : ([
+      ],
+      ...(sep === ''
+        ? []
+        : ([
+            [
+              `${month}${sep}6${sep}2021`,
               [
-                `${month}${sep}6${sep}2021`,
-                [
-                  ['setYear', 2021],
-                  ['setMonth', 7],
-                  ['setDate', 6],
-                  ['startOfDay'],
-                  ['makeInterval', ['addDays', 1]],
-                ],
+                ['setYear', 2021],
+                ['setMonth', 7],
+                ['setDate', 6],
+                ['startOfDay'],
+                ['makeInterval', ['addDays', 1]],
               ],
-            ] as [string, ParseResult][])),
-      ]
-    ),
+            ],
+          ] as [string, ParseResult][])),
+    ]),
   ]),
 ]

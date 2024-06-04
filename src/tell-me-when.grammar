@@ -1,163 +1,131 @@
-YearMonthDay<sep, month> {
-  Year { FullYear ~d }
-  (
-    sep
-    Month { month ~YearMonthDay }
-    (
-      sep
-      Day { NumericDayOfMonth | DayOfMonthOrdinal }
-    )?
-  )?
-}
-
-MonthDayYear<month, sep1, sep2> {
-  Month { month ~m }
-  (
-    sep1
-    Day { NumericDayOfMonth | DayOfMonthOrdinal }
-    (
-      sep2
-      Year { FullYear | TwoDigitYear }
-    )?
-  )?
-}
-
-DayMonthYear<sep, month> {
-  Day { DayOfMonthOrdinal ~day | NumericDayOfMonth ~d }
-  (
-    sep
-    Month { month ~DayMonthYear }
-    (
-      sep
-      Year { FullYear | TwoDigitYear }
-    )?
-  )
-}
-
-DayOfMonthYear {
-  Day { DayOfMonthOrdinal ~day }
-  (
-    space ('day' space)? 'of' space
-    (
-      Month { MonthName }
-      (
-        (space? ',' space? | space)
-        Year { FullYear | TwoDigitYear }
-      )?
-    )
-  )?
-}
-
 @top DateTimeExpression {
-  YearMonthDay<'', MonthNameMaybeDot>
-  | YearMonthDay<'.', MonthName>
-  | YearMonthDay<'-', MonthNameMaybeDot>
-  | YearMonthDay<'_', MonthNameMaybeDot>
-  | YearMonthDay<'/', MonthNameMaybeDot>
-  | YearMonthDay<space, MonthNameMaybeDot>
-  | YearMonthDay<'.', MonthNumber>
-  | YearMonthDay<'-', MonthNumber>
-  | YearMonthDay<'_', MonthNumber>
-  | YearMonthDay<'/', MonthNumber>
-  | YearMonthDay<space, MonthNumber>
-  | MonthDayYear<MonthName, '.', '.'>
-  | MonthDayYear<MonthNameMaybeDot, '', ''>
-  | MonthDayYear<MonthNameMaybeDot, '-', '-'>
-  | MonthDayYear<MonthNameMaybeDot, '-', '-'>
-  | MonthDayYear<MonthNameMaybeDot, '_', '_'>
-  | MonthDayYear<MonthNameMaybeDot, '/', '/'>
-  | MonthDayYear<MonthNameMaybeDot, space, space | (space? ',' space?)>
-  | MonthDayYear<MonthNumber, '', ''>
-  | MonthDayYear<MonthNumber, '.', '.'>
-  | MonthDayYear<MonthNumber, '-', '-'>
-  | MonthDayYear<MonthNumber, '_', '_'>
-  | MonthDayYear<MonthNumber, '/', '/'>
-  | MonthDayYear<MonthNumber, space, space>
-  | DayOfMonthYear
-  | DayMonthYear<'', MonthNameMaybeDot>
-  | DayMonthYear<'.', MonthName>
-  | DayMonthYear<'-', MonthNameMaybeDot>
-  | DayMonthYear<'_', MonthNameMaybeDot>
-  | DayMonthYear<'/', MonthNameMaybeDot>
-  | DayMonthYear<space, MonthNameMaybeDot>
-  | DayMonthYear<'.', MonthNumber>
-  | DayMonthYear<'-', MonthNumber>
-  | DayMonthYear<'_', MonthNumber>
-  | DayMonthYear<'/', MonthNumber>
-  | DayMonthYear<space, MonthNumber>
+  Date
 }
 
-MonthNumber {
-  (
-    '1'
-    | '2'
-    | '3'
-    | '4'
-    | '5'
-    | '6'
-    | '7'
-    | '8'
-    | '9'
-    | '01'
-    | '02'
-    | '03'
-    | '04'
-    | '05'
-    | '06'
-    | '07'
-    | '08'
-    | '09'
-    | '10'
-    | '11'
-    | '12'    
-  ) ~n
+Date {
+  FullYear ~n (
+    (MonthNameNoDot DayOfMonth?)
+    | ('.' MonthNoDot ('.' DayOfMonth)?)
+    | ('-' MonthNoDot ('-' DayOfMonth)?)
+    | ('_' MonthNoDot ('_' DayOfMonth)?)
+    | ('/' MonthNoDot ('/' DayOfMonth)?)
+    | (space Month (space DayOfMonth)?)
+  )?
+  | MonthNameNoDot ~m (
+    ('.' DayOfMonth ('.' Year)?)
+    | (NthDayOfMonth ~n (Year)?)
+    | DayOfMonth ~n
+    | ('-' DayOfMonth ('-' Year)?)
+    | ('_' DayOfMonth ('_' Year)?)
+    | ('/' DayOfMonth ('/' Year)?)
+  )?
+  | MonthName ~m (space DayOfMonth ((space | (space? ',' space?)) Year)?)?
+  | MonthNum ~n (
+    (NthDayOfMonth (Year)?)
+    | ('.' DayOfMonth ('.' Year)?)
+    | ('-' DayOfMonth ('-' Year)?)
+    | ('_' DayOfMonth ('_' Year)?)
+    | ('/' DayOfMonth ('/' Year)?)
+    | (space DayOfMonth (space Year)?)     
+  )?
+  | NthDayOfMonth ~n (
+    (MonthNameNoDot Year?)
+    | ('.' MonthNoDot ('.' Year)?)
+    | ('-' MonthNoDot ('-' Year)?)
+    | ('_' MonthNoDot ('_' Year)?)
+    | ('/' MonthNoDot ('/' Year)?)
+    | (space (('day' space)? 'of' space)? MonthName ((space | (space? ',' space?)) Year)?)
+  )?
+  | DayOfMonthNum ~n (
+    (MonthNameNoDot Year?)
+    | ('.' MonthNoDot ('.' Year)?)
+    | ('-' MonthNoDot ('-' Year)?)
+    | ('_' MonthNoDot ('_' Year)?)
+    | ('/' MonthNoDot ('/' Year)?)
+    | (space Month (space Year)?)
+  )?
 }
-NumericDayOfMonth {
-  (
-    '1'
-    | '2'
-    | '3'
-    | '4'
-    | '5'
-    | '6'
-    | '7'
-    | '8'
-    | '9'
-    | '01'
-    | '02'
-    | '03'
-    | '04'
-    | '05'
-    | '06'
-    | '07'
-    | '08'
-    | '09'
-    | '10'
-    | '11'
-    | '12'
-    | '13'
-    | '14'
-    | '15'
-    | '16'
-    | '17'
-    | '18'
-    | '19'   
-    | '20'
-    | '21'
-    | '22'
-    | '23'
-    | '24'
-    | '25'
-    | '26'
-    | '27'
-    | '28'
-    | '29'   
-    | '30'
-    | '31'
-  ) ~n
+DayOfMonth { NthDayOfMonth | DayOfMonthNum }
+Month { MonthName | MonthNum }
+MonthNoDot { MonthNameNoDot | MonthNum }
+Year { FullYear | TwoDigitYear }
+
+MonthNameNoDot {
+  MonthNameFull
+  | MonthNameAbbrev
 }
 
-MonthNameFullExceptMay {
+MonthName {
+  (MonthNameAbbrev ~m '.'?)
+  | MonthNameFull
+}
+MonthNum {
+  '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '01'
+  | '02'
+  | '03'
+  | '04'
+  | '05'
+  | '06'
+  | '07'
+  | '08'
+  | '09'
+  | '10'
+  | '11'
+  | '12'    
+}
+DayOfMonthNum {
+  '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '01'
+  | '02'
+  | '03'
+  | '04'
+  | '05'
+  | '06'
+  | '07'
+  | '08'
+  | '09'
+  | '10'
+  | '11'
+  | '12'
+  | '13'
+  | '14'
+  | '15'
+  | '16'
+  | '17'
+  | '18'
+  | '19'   
+  | '20'
+  | '21'
+  | '22'
+  | '23'
+  | '24'
+  | '25'
+  | '26'
+  | '27'
+  | '28'
+  | '29'   
+  | '30'
+  | '31'
+}
+
+MonthNameFull {
   'january'
   | 'february'
   | 'march'
@@ -186,22 +154,12 @@ MonthNameAbbrev {
   | 'dec'
 }
 
-MonthName {
-  MonthNameFullExceptMay
-  | MonthNameAbbrev
-}
-
-MonthNameMaybeDot {
-  (MonthNameAbbrev ~m '.'?)
-  | MonthNameFullExceptMay
-}
-
 @tokens {
   space { @whitespace+ }
 
   FullYear { @digit @digit @digit @digit }
   TwoDigitYear { "'"? @digit @digit }
-  DayOfMonthOrdinal {
+  NthDayOfMonth {
     '1st' | 'first'
     | '2nd' | 'second'
     | '3rd' | 'third'
