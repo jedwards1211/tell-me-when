@@ -12,12 +12,16 @@ export abstract class GrammarNode {
     return new OrNode(this, alternate)
   }
 
-  static oneOf(...options: GrammarNode[]) {
-    return new OrNode(...options)
+  static oneOf(
+    ...options: (string | RegExp | GrammarNode | (() => GrammarNode))[]
+  ) {
+    return new OrNode(...options.map(GrammarNode.toGrammarNode))
   }
 
-  static longestOf(...options: GrammarNode[]) {
-    return new LongestOfNode(...options)
+  static longestOf(
+    ...options: (string | RegExp | GrammarNode | (() => GrammarNode))[]
+  ) {
+    return new LongestOfNode(...options.map(GrammarNode.toGrammarNode))
   }
 
   repeat(count: number): RepeatNode

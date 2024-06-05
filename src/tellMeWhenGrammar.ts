@@ -247,4 +247,20 @@ export const DateTimeExpression = named(
   )
 )
 
-export const Root = group(space.maybe(), DateTimeExpression, space.maybe())
+export const RangeExpression = named(
+  'RangeExpression',
+  group(
+    group('from', space).maybe(),
+    DateTimeExpression,
+    space,
+    oneOf('to', 'through', 'until', '-'),
+    space,
+    DateTimeExpression
+  )
+)
+
+export const Root = group(
+  space.maybe(),
+  oneOf(RangeExpression, DateTimeExpression),
+  space.maybe()
+)
