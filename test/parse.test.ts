@@ -2,25 +2,37 @@ import { describe, it } from 'mocha'
 import { expect } from 'chai'
 import { parseTestcases } from './parseTestcases'
 import { parse } from '../src/parse'
-import { parser } from '../src/parser'
-import { stringifySyntaxNode } from './stringifySyntaxNode'
-import { findNode } from '../src/findNode'
+import { ParseState } from '../src/ParseState'
+import { Root } from '../src/tellMeWhenGrammar'
+import { stringifyParseNode } from './stringifyParseNode'
 
-describe(`parse`, function () {
-  for (const [input, expected] of parseTestcases) {
-    it(input, function () {
+describe(`parse2`, function () {
+  for (const input of Object.keys(parseTestcases)) {
+    const value = parseTestcases[input]
+    const expected =
+      value instanceof Object && 'ref' in value
+        ? parseTestcases[value.ref]
+        : value
+    it(`${input}${expected === 'error' ? ' (error)' : ''}`, function () {
+      const state = new ParseState(input)
+      const error = Root.parse(state).find((n) => n.isError)
+      if (error) {
+        if (expected === 'error') return
+        throw new Error(`syntax error`)
+      }
+
       try {
-        const error = findNode(parser.parse(input).topNode, '⚠')
-        if (error) throw new Error(`syntax error`)
-        const parsed = parse(input)
-        expect(parsed).to.deep.equal(expected)
+        if (expected === 'error') {
+          expect(() => parse(input)).to.throw()
+        } else {
+          const parsed = parse(input)
+          expect(parsed).to.deep.equal(expected)
+        }
       } catch (error) {
         if (error instanceof Error) {
-          const tree = parser.parse(input)
-          error.message += `\nParse tree: ${stringifySyntaxNode(
-            input,
-            tree.topNode
-          )}`
+          const state = new ParseState(input)
+          const tree = Root.parse(state)
+          error.message += `\nParse tree: ${stringifyParseNode(input, tree)}`
         }
         throw error
       }

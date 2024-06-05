@@ -1,6 +1,6 @@
-import { SyntaxNode } from '@lezer/common'
-import { parser } from './parser'
-import { findNode } from './findNode'
+import { ParseNode } from './ParseNode'
+import { ParseState } from './ParseState'
+import { Root } from './tellMeWhenGrammar'
 
 export type ParseResult = Operation[]
 
@@ -28,11 +28,15 @@ type Operation =
   | ['makeInterval', ...Operation[]]
 
 export function parse(input: string): ParseResult {
-  const tree = parser.parse(input)
-  return convertNode(input, tree.topNode)
+  const state = new ParseState(input)
+  const tree = Root.parse(state)
+  if (state.index !== input.length) {
+    throw new Error(`syntax error at ${state.index}`)
+  }
+  return convertNode(input, tree)
 }
 
-function convertNode(input: string, node: SyntaxNode | null): ParseResult {
+function convertNode(input: string, node: ParseNode | undefined): ParseResult {
   if (!node) return []
   const Time = parseTime(input, node)
   const Date = parseDate(input, node)
@@ -49,35 +53,45 @@ function convertNode(input: string, node: SyntaxNode | null): ParseResult {
 
 function parseDate(
   input: string,
-  node: SyntaxNode | null
+  node: ParseNode | undefined
 ): ParseResult | undefined {
-  const Date = findNode(node, 'Date') || findNode(node, 'DayDate')
+  const Date = node?.find('Date') || node?.find('DayDate')
   if (!Date) return []
   const year = parseYear(input, Date)
   const month = parseMonth(input, Date)
   const day = parseDay(input, Date)
   return [
-    ...(year != null ? ([['setYear', year]] as Operation[]) : []),
-    ...(month != null ? ([['setMonth', month]] as Operation[]) : []),
-    ...(day != null ? ([['setDate', day]] as Operation[]) : []),
+    ...(year != undefined ? ([['setYear', year]] as Operation[]) : []),
+    ...(month != undefined ? ([['setMonth', month]] as Operation[]) : []),
+    ...(day != undefined ? ([['setDate', day]] as Operation[]) : []),
     [
-      day != null
+      day != undefined
         ? 'startOfDay'
-        : month != null
+        : month != undefined
         ? 'startOfMonth'
         : 'startOfYear',
     ],
     [
       'makeInterval',
-      [day != null ? 'addDays' : month != null ? 'addMonths' : 'addYears', 1],
+      [
+        day != undefined
+          ? 'addDays'
+          : month != undefined
+          ? 'addMonths'
+          : 'addYears',
+        1,
+      ],
     ],
   ]
 }
-function parseYear(input: string, node: SyntaxNode | null): number | undefined {
+function parseYear(
+  input: string,
+  node: ParseNode | undefined
+): number | undefined {
   if (!node) return undefined
-  const FullYear = findNode(node, 'FullYear')
+  const FullYear = node.find('FullYear')
   if (FullYear) return parseInt(input.substring(FullYear.from, FullYear.to))
-  const TwoDigitYear = findNode(node, 'TwoDigitYear')
+  const TwoDigitYear = node.find('TwoDigitYear')
   if (TwoDigitYear) {
     const digits = parseInt(
       input.substring(TwoDigitYear.from, TwoDigitYear.to).replace(/^'/, '')
@@ -89,13 +103,12 @@ function parseYear(input: string, node: SyntaxNode | null): number | undefined {
 
 function parseMonth(
   input: string,
-  node: SyntaxNode | null
+  node: ParseNode | undefined
 ): number | undefined {
   if (!node) return undefined
-  const MonthNum = findNode(node, 'MonthNum')
+  const MonthNum = node.find('MonthNum')
   if (MonthNum) return parseInt(input.substring(MonthNum.from, MonthNum.to)) - 1
-  const MonthName =
-    findNode(node, 'MonthName') || findNode(node, 'MonthNameNoDot')
+  const MonthName = node.find('MonthName') || node.find('MonthNameNoDot')
   if (MonthName) {
     switch (input.substring(MonthName.from, MonthName.from + 3).toLowerCase()) {
       case 'jan':
@@ -127,12 +140,15 @@ function parseMonth(
   return undefined
 }
 
-function parseDay(input: string, node: SyntaxNode | null): number | undefined {
+function parseDay(
+  input: string,
+  node: ParseNode | undefined
+): number | undefined {
   if (!node) return undefined
-  const DayOfMonthNum = findNode(node, 'DayOfMonthNum')
+  const DayOfMonthNum = node.find('DayOfMonthNum')
   if (DayOfMonthNum)
     return parseInt(input.substring(DayOfMonthNum.from, DayOfMonthNum.to))
-  const NthDayOfMonth = findNode(node, 'NthDayOfMonth')
+  const NthDayOfMonth = node.find('NthDayOfMonth')
   if (NthDayOfMonth) {
     const value = input.substring(NthDayOfMonth.from, NthDayOfMonth.to)
     switch (value) {
@@ -236,34 +252,34 @@ function parseDay(input: string, node: SyntaxNode | null): number | undefined {
 
 function parseTime(
   input: string,
-  node: SyntaxNode | null
+  node: ParseNode | undefined
 ): ParseResult | undefined {
-  const Time = findNode(node, 'Time') || findNode(node, 'AtTime')
+  const Time = node?.find('Time') || node?.find('AtTime')
   if (!Time) return undefined
   const hours = parseHours(input, Time)
   const minutes = parseMinutes(input, Time)
   const seconds = parseSeconds(input, Time)
   const milliseconds = parseMilliseconds(input, Time)
   return [
-    ...(hours != null ? ([['setHours', hours]] as Operation[]) : []),
-    ...(minutes != null ? ([['setMinutes', minutes]] as Operation[]) : []),
-    ...(seconds != null ? ([['setSeconds', seconds]] as Operation[]) : []),
-    ...(milliseconds != null
+    ...(hours != undefined ? ([['setHours', hours]] as Operation[]) : []),
+    ...(minutes != undefined ? ([['setMinutes', minutes]] as Operation[]) : []),
+    ...(seconds != undefined ? ([['setSeconds', seconds]] as Operation[]) : []),
+    ...(milliseconds != undefined
       ? ([['setMilliseconds', milliseconds]] as Operation[])
       : ([
           [
-            seconds != null
+            seconds != undefined
               ? 'startOfSecond'
-              : minutes != null
+              : minutes != undefined
               ? 'startOfMinute'
               : 'startOfHour',
           ],
           [
             'makeInterval',
             [
-              seconds != null
+              seconds != undefined
                 ? 'addSeconds'
-                : minutes != null
+                : minutes != undefined
                 ? 'addMinutes'
                 : 'addHours',
               1,
@@ -275,36 +291,36 @@ function parseTime(
 
 function parseHours(
   input: string,
-  node: SyntaxNode | null
+  node: ParseNode | undefined
 ): number | undefined {
-  const Hours = findNode(node, 'Hours')
+  const Hours = node?.find('Hours')
   if (Hours) return parseInt(input.substring(Hours.from, Hours.to))
   return undefined
 }
 
 function parseMinutes(
   input: string,
-  node: SyntaxNode | null
+  node: ParseNode | undefined
 ): number | undefined {
-  const Minutes = findNode(node, 'Minutes')
+  const Minutes = node?.find('Minutes')
   if (Minutes) return parseInt(input.substring(Minutes.from, Minutes.to))
   return undefined
 }
 
 function parseSeconds(
   input: string,
-  node: SyntaxNode | null
+  node: ParseNode | undefined
 ): number | undefined {
-  const Seconds = findNode(node, 'Seconds')
+  const Seconds = node?.find('Seconds')
   if (Seconds) return parseInt(input.substring(Seconds.from, Seconds.to))
   return undefined
 }
 
 function parseMilliseconds(
   input: string,
-  node: SyntaxNode | null
+  node: ParseNode | undefined
 ): number | undefined {
-  const Milliseconds = findNode(node, 'Milliseconds')
+  const Milliseconds = node?.find('Milliseconds')
   if (Milliseconds)
     return parseInt(
       input.substring(Milliseconds.from, Milliseconds.to).padEnd(3, '0')
