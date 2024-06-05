@@ -14,7 +14,7 @@ describe(`parse2`, function () {
         ? parseTestcases[value.ref]
         : value
     it(`${input}${expected === 'error' ? ' (error)' : ''}`, function () {
-      const state = new ParseState(input)
+      const state = new ParseState(input, { flags: 'gi' })
       const error = Root.parse(state).find((n) => n.isError)
       if (error) {
         if (expected === 'error') return
@@ -30,7 +30,7 @@ describe(`parse2`, function () {
         }
       } catch (error) {
         if (error instanceof Error) {
-          const state = new ParseState(input)
+          const state = new ParseState(input, { flags: 'gi' })
           const tree = Root.parse(state)
           error.message += `\nParse tree: ${stringifyParseNode(input, tree)}`
         }

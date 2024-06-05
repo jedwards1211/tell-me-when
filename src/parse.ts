@@ -28,7 +28,7 @@ type Operation =
   | ['makeInterval', ...Operation[]]
 
 export function parse(input: string): ParseResult {
-  const state = new ParseState(input)
+  const state = new ParseState(input, { flags: 'gi' })
   const tree = Root.parse(state)
   if (state.index !== input.length) {
     throw new Error(`syntax error at ${state.index}`)
@@ -150,7 +150,9 @@ function parseDay(
     return parseInt(input.substring(DayOfMonthNum.from, DayOfMonthNum.to))
   const NthDayOfMonth = node.find('NthDayOfMonth')
   if (NthDayOfMonth) {
-    const value = input.substring(NthDayOfMonth.from, NthDayOfMonth.to)
+    const value = input
+      .substring(NthDayOfMonth.from, NthDayOfMonth.to)
+      .toLowerCase()
     switch (value) {
       case '1st':
       case 'first':

@@ -4,27 +4,46 @@ import { ParseState } from './ParseState'
 export abstract class GrammarNode {
   abstract parse(state: ParseState): ParseNode
 
+  /**
+   * Matches this node once or zero times
+   */
   maybe() {
     return new MaybeNode(this)
   }
 
+  /**
+   * Matches this node or the alternate node
+   */
   or(alternate: GrammarNode) {
     return new OrNode(this, alternate)
   }
 
+  /**
+   * Matches one of the given nodes.  The first option to parse successfully wins
+   */
   static oneOf(
     ...options: (string | RegExp | GrammarNode | (() => GrammarNode))[]
   ) {
     return new OrNode(...options.map(GrammarNode.toGrammarNode))
   }
 
+  /**
+   * Matches one of the given nodes.  Tries all of the options, and the one that
+   * successfully parses the farthest in the input wins
+   */
   static longestOf(
     ...options: (string | RegExp | GrammarNode | (() => GrammarNode))[]
   ) {
     return new LongestOfNode(...options.map(GrammarNode.toGrammarNode))
   }
 
+  /**
+   * Matches this node repeated the given number of times
+   */
   repeat(count: number): RepeatNode
+  /**
+   * Matches this node repeated between min and max (inclusive) times
+   */
   repeat(min: number, max: number): RepeatNode
   repeat(countOrMin: number, max?: number): RepeatNode {
     return new RepeatNode(this, max != null ? [countOrMin, max] : countOrMin)
@@ -40,16 +59,27 @@ export abstract class GrammarNode {
       : new TokenNode(factor)
   }
 
+  /**
+   * Matches the given string or regular expression
+   */
   static token(token: string | RegExp) {
     return new TokenNode(token)
   }
 
+  /**
+   * Matches the given nodes in sequence
+   */
   static group(
     ...sequence: (string | RegExp | GrammarNode | (() => GrammarNode))[]
   ) {
     return new GroupNode(undefined, ...sequence.map(GrammarNode.toGrammarNode))
   }
 
+  /**
+   * Creates a named group that matches the given nodes in sequence.
+   * Same as {@link group} but the {@link ParseNode} returned by {@link parse}
+   * will have the given name.
+   */
   static named(
     name: string,
     ...sequence: (string | RegExp | GrammarNode | (() => GrammarNode))[]
