@@ -14,4 +14,13 @@ export const
   Month = 12,
   MonthName = 13,
   Year = 14,
-  TwoDigitYear = 15
+  TwoDigitYear = 15,
+  DayDate = 16,
+  AtTime = 17,
+  Hours = 18,
+  Digit = 19,
+  Minutes = 20,
+  Seconds = 21,
+  Milliseconds = 22,
+  AmPm = 23,
+  Time = 24

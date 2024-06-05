@@ -207,4 +207,41 @@ export const parseTestcases: [string, ParseResult][] = [
           ] as [string, ParseResult][])),
     ]),
   ]),
+  ...[
+    '1am on aug 6',
+    '1 on aug 6',
+    '1am aug 6',
+    'aug 6 at 1am',
+    'aug 6 at 1',
+    'aug 6 1am',
+  ].map((input): [string, ParseResult] => [
+    input,
+    [
+      ['setMonth', 7],
+      ['setDate', 6],
+      ['setHours', 1],
+      ['startOfHour'],
+      ['makeInterval', ['addHours', 1]],
+    ],
+  ]),
+  ...[
+    '1:23am on aug 6',
+    '1:23 on aug 6',
+    '1:23 aug 6',
+    '1:23am aug 6',
+    'aug 6 at 1:23am',
+    'aug 6 at 1:23',
+    'aug 6 1:23am',
+    'aug 6 1:23',
+  ].map((input): [string, ParseResult] => [
+    input,
+    [
+      ['setMonth', 7],
+      ['setDate', 6],
+      ['setHours', 1],
+      ['setMinutes', 23],
+      ['startOfMinute'],
+      ['makeInterval', ['addMinutes', 1]],
+    ],
+  ]),
 ]
