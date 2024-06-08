@@ -1,13 +1,13 @@
 {
-  "name": "@jcoreio/tell-me-when",
+  "name": "tell-me-when",
   "description": "human relative date and time parser",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jcoreio/tell-me-when.git"
+    "url": "https://github.com/jedwards1211/tell-me-when.git"
   },
-  "homepage": "https://github.com/jcoreio/tell-me-when",
+  "homepage": "https://github.com/jedwards1211/tell-me-when",
   "bugs": {
-    "url": "https://github.com/jcoreio/tell-me-when/issues"
+    "url": "https://github.com/jedwards1211/tell-me-when/issues"
   },
   "author": "Andy Edwards",
   "license": "MIT",

@@ -4,6 +4,10 @@ import { ParseState } from './ParseState'
 export abstract class GrammarNode {
   abstract parse(state: ParseState): ParseNode
 
+  parseAs(parseAs: new (node: ParseNode) => ParseNode) {
+    return new ParseAsNode(this, parseAs)
+  }
+
   /**
    * Matches this node once or zero times
    */
@@ -190,16 +194,16 @@ export class LongestOfNode extends GrammarNode {
       }
     }
     state.index = best.isError ? startIndex : best.to
-    return best
+    return best as any
   }
 }
 
 export class GroupNode extends GrammarNode {
   public factors: GrammarNode[]
 
-  constructor(public name: string | undefined, ...children: GrammarNode[]) {
+  constructor(public name: string | undefined, ...factors: GrammarNode[]) {
     super()
-    this.factors = children
+    this.factors = factors
   }
 
   parse(state: ParseState): ParseNode {
@@ -214,5 +218,20 @@ export class GroupNode extends GrammarNode {
       if (!parsed.isEmpty) children.push(parsed)
     }
     return new ParseNode(this.name, startIndex, state.index, children)
+  }
+}
+
+export class ParseAsNode extends GrammarNode {
+  constructor(
+    public node: { parse: (state: ParseState) => ParseNode },
+    private parseAsClass: new (node: ParseNode) => ParseNode
+  ) {
+    super()
+  }
+
+  parse(state: ParseState): ParseNode {
+    const parsed = this.node.parse(state)
+    if (parsed.isError) return parsed
+    return new this.parseAsClass(parsed)
   }
 }

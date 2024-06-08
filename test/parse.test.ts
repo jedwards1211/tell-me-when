@@ -15,10 +15,13 @@ describe(`parse2`, function () {
         : value
     it(`${input}${expected === 'error' ? ' (error)' : ''}`, function () {
       const state = new ParseState(input, { flags: 'gi' })
-      const error = Root.parse(state).find((n) => n.isError)
+      const tree = Root.parse(state)
+      const error = tree.find((n) => n.isError)
       if (error) {
         if (expected === 'error') return
-        throw new Error(`syntax error`)
+        throw new Error(
+          `syntax error\nParse tree: ${stringifyParseNode(input, tree)}`
+        )
       }
 
       try {

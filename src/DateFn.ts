@@ -1,0 +1,28 @@
+export type DateFn =
+  | ['now']
+  | ['setYear', number]
+  | ['setMonth', number]
+  | ['setDate', number]
+  | ['setHours', number]
+  | ['setMinutes', number]
+  | ['setSeconds', number]
+  | ['setMilliseconds', number]
+  | AddFn
+  | ['startOfYear']
+  | ['startOfMonth']
+  | ['startOfWeek']
+  | ['startOfDay']
+  | ['startOfHour']
+  | ['startOfMinute']
+  | ['startOfSecond']
+  | ['makeInterval', ...DateFn[]]
+
+export type AddFn =
+  | ['addYears', number]
+  | ['addMonths', number]
+  | ['addWeeks', number]
+  | ['addDays', number]
+  | ['addHours', number]
+  | ['addMinutes', number]
+  | ['addSeconds', number]
+  | ['addMilliseconds', number]

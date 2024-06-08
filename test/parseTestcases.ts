@@ -1,8 +1,8 @@
-import { ParseResult } from '../src/parse'
+import { DateFn } from '../src/DateFn'
 
 export const parseTestcases: Record<
   string,
-  ParseResult | { ref: string } | 'error'
+  DateFn[] | { ref: string } | 'error'
 > = {
   '2021': [
     ['setYear', 2021],
@@ -432,4 +432,231 @@ export const parseTestcases: Record<
     ['makeInterval', ['addMinutes', 1]],
   ],
   '01:59:60': 'error',
+  'aug 9 to sep 8': [
+    ['setMonth', 7],
+    ['setDate', 9],
+    ['startOfDay'],
+    ['makeInterval', ['setMonth', 8], ['setDate', 8], ['startOfDay']],
+  ],
+  'aug 9 - sep 8': { ref: 'aug 9 to sep 8' },
+  'aug 9 until sep 8': { ref: 'aug 9 to sep 8' },
+  'from aug 9 to sep 8': { ref: 'aug 9 to sep 8' },
+  'from aug 9 - sep 8': { ref: 'aug 9 to sep 8' },
+  'from aug 9 until sep 8': { ref: 'aug 9 to sep 8' },
+
+  'aug 9 through sep 8': [
+    ['setMonth', 7],
+    ['setDate', 9],
+    ['startOfDay'],
+    [
+      'makeInterval',
+      ['setMonth', 8],
+      ['setDate', 8],
+      ['startOfDay'],
+      ['addDays', 1],
+    ],
+  ],
+  'from aug 9 through sep 8': { ref: 'aug 9 through sep 8' },
+
+  'aug 9 through sep': [
+    ['setMonth', 7],
+    ['setDate', 9],
+    ['startOfDay'],
+    ['makeInterval', ['setMonth', 8], ['startOfMonth'], ['addMonths', 1]],
+  ],
+  'from aug 9 through sep': { ref: 'aug 9 through sep' },
+
+  'aug 9 to sep': [
+    ['setMonth', 7],
+    ['setDate', 9],
+    ['startOfDay'],
+    ['makeInterval', ['setMonth', 8], ['startOfMonth']],
+  ],
+  'aug 9 - sep': { ref: 'aug 9 to sep' },
+  'aug 9 until sep': { ref: 'aug 9 to sep' },
+  'from aug 9 - sep': { ref: 'aug 9 to sep' },
+  'from aug 9 until sep': { ref: 'aug 9 to sep' },
+
+  'aug 9 to sep 13 at 8:25': [
+    ['setMonth', 7],
+    ['setDate', 9],
+    ['startOfDay'],
+    [
+      'makeInterval',
+      ['setMonth', 8],
+      ['setDate', 13],
+      ['setHours', 8],
+      ['setMinutes', 25],
+      ['startOfMinute'],
+    ],
+  ],
+  'aug 9 3pm to sep 13 at 8:25': [
+    ['setMonth', 7],
+    ['setDate', 9],
+    ['setHours', 15],
+    ['startOfHour'],
+    [
+      'makeInterval',
+      ['setMonth', 8],
+      ['setDate', 13],
+      ['setHours', 8],
+      ['setMinutes', 25],
+      ['startOfMinute'],
+    ],
+  ],
+  today: [['startOfDay'], ['makeInterval', ['addDays', 1]]],
+  'today at 3pm': [
+    ['setHours', 15],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
+  yesterday: [
+    ['addDays', -1],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  'day before yesterday': [
+    ['addDays', -2],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  'the day before yesterday': { ref: 'day before yesterday' },
+  'yesterday at 3pm': [
+    ['addDays', -1],
+    ['setHours', 15],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
+  'day before yesterday at 3pm': [
+    ['addDays', -2],
+    ['setHours', 15],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
+  'the day before yesterday at 3pm': { ref: 'day before yesterday at 3pm' },
+  tomorrow: [['addDays', 1], ['startOfDay'], ['makeInterval', ['addDays', 1]]],
+  'day after tomorrow': [
+    ['addDays', 2],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  'the day after tomorrow': { ref: 'day after tomorrow' },
+  'tomorrow at 3pm': [
+    ['addDays', 1],
+    ['setHours', 15],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
+  'day after tomorrow at 3pm': [
+    ['addDays', 2],
+    ['setHours', 15],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
+  'the day after tomorrow at 3pm': { ref: 'day after tomorrow at 3pm' },
+  'today until tomorrow': [
+    ['startOfDay'],
+    ['makeInterval', ['now'], ['addDays', 1], ['startOfDay']],
+  ],
+  'today through tomorrow': [
+    ['startOfDay'],
+    ['makeInterval', ['now'], ['addDays', 1], ['startOfDay'], ['addDays', 1]],
+  ],
+  'yesterday at 4am through the day after tomorrow': [
+    ['addDays', -1],
+    ['setHours', 4],
+    ['startOfHour'],
+    ['makeInterval', ['now'], ['addDays', 2], ['startOfDay'], ['addDays', 1]],
+  ],
+  '3 days ago': [['addDays', -3]],
+  '3d2h1m ago': [
+    ['addDays', -3],
+    ['addHours', -2],
+    ['addMinutes', -1],
+  ],
+  '3d 2h 1m ago': { ref: '3d2h1m ago' },
+  '3 day 2 hr 1 min ago': { ref: '3d2h1m ago' },
+  '3 day 2 hr 1 min in the past': { ref: '3d2h1m ago' },
+  '3 day 2 hr 1 min before now': { ref: '3d2h1m ago' },
+  '3 day 2 hr 1 min before present': { ref: '3d2h1m ago' },
+  '3 day 2 hr 1 min before the present': { ref: '3d2h1m ago' },
+  '3 day 2 hr 1 min before the present time': { ref: '3d2h1m ago' },
+  '3 day 2 hr 1 min before present time': { ref: '3d2h1m ago' },
+  '3 days, two hours and 1 minute ago': { ref: '3d2h1m ago' },
+  '3d2h1m from now': [
+    ['addDays', 3],
+    ['addHours', 2],
+    ['addMinutes', 1],
+  ],
+  '3d2h1m in the future': { ref: '3d2h1m from now' },
+  'three days ago': { ref: '3 days ago' },
+  'three days from now': [['addDays', 3]],
+  'three days in the future': { ref: 'three days from now' },
+  '1 day ago': [['addDays', -1]],
+  'one day ago': { ref: '1 day ago' },
+  'three days from now at 3pm': [
+    ['addDays', 3],
+    ['setHours', 15],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
+
+  'this month': [['startOfMonth'], ['makeInterval', ['addMonths', 1]]],
+  'last month': [
+    ['addMonths', -1],
+    ['startOfMonth'],
+    ['makeInterval', ['addMonths', 1]],
+  ],
+  '1 month ago': [['addMonths', -1]],
+  'one month ago': { ref: '1 month ago' },
+  'month before last': [
+    ['addMonths', -2],
+    ['startOfMonth'],
+    ['makeInterval', ['addMonths', 1]],
+  ],
+  'the month before last': { ref: 'month before last' },
+  '2 months ago': [['addMonths', -2]],
+  'two months ago': { ref: '2 months ago' },
+  '3 months ago': [['addMonths', -3]],
+  'three months ago': { ref: '3 months ago' },
+
+  'next month': [
+    ['addMonths', 1],
+    ['startOfMonth'],
+    ['makeInterval', ['addMonths', 1]],
+  ],
+  '1 month from now': [['addMonths', 1]],
+  'one month from now': { ref: '1 month from now' },
+  '1 month in the future': { ref: '1 month from now' },
+  'one month in the future': { ref: '1 month from now' },
+  'month after next': [
+    ['addMonths', 2],
+    ['startOfMonth'],
+    ['makeInterval', ['addMonths', 1]],
+  ],
+  'the month after next': { ref: 'month after next' },
+  '2 months from now': [['addMonths', 2]],
+  'two months from now': { ref: '2 months from now' },
+  '3 months from now': [['addMonths', 3]],
+  'three months from now': { ref: '3 months from now' },
+  'yesterday to two months from now': [
+    ['addDays', -1],
+    ['startOfDay'],
+    ['makeInterval', ['now'], ['addMonths', 2]],
+  ],
+  'yesterday through two months from now': [
+    ['addDays', -1],
+    ['startOfDay'],
+    ['makeInterval', ['now'], ['addMonths', 2]],
+  ],
+  'the day before yesterday at 2am until now': [
+    ['addDays', -2],
+    ['setHours', 2],
+    ['startOfHour'],
+    ['makeInterval', ['now']],
+  ],
+  'now until tomorrow': [
+    ['now'],
+    ['makeInterval', ['now'], ['addDays', 1], ['startOfDay']],
+  ],
 }
