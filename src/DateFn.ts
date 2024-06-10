@@ -16,6 +16,8 @@ export type DateFn =
   | ['startOfMinute']
   | ['startOfSecond']
   | ['makeInterval', ...DateFn[]]
+  | ['if', { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
+  | ['closestToNow', a: DateFn[], b: DateFn[]]
 
 export type AddFn =
   | ['addYears', number]
