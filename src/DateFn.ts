@@ -3,6 +3,7 @@ export type DateFn =
   | ['setYear', number]
   | ['setMonth', number]
   | ['setDate', number]
+  | ['setDay', number]
   | ['setHours', number]
   | ['setMinutes', number]
   | ['setSeconds', number]

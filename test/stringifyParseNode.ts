@@ -5,8 +5,12 @@ export function stringifyParseNode(input: string, node: ParseNode): string {
     indent(stringifyParseNode(input, c))
   )
   return children?.length
-    ? `${node.name} {\n${children.join('\n')}\n}`
-    : `${node.name} { ${input.substring(node.from, node.to)} }`
+    ? `${node.name}${
+        node.constructor === ParseNode ? '' : ` [${node.constructor.name}]`
+      } {\n${children.join('\n')}\n}`
+    : `${node.name}${
+        node.constructor === ParseNode ? '' : ` [${node.constructor.name}]`
+      } { ${input.substring(node.from, node.to)} }`
 }
 
 function indent(s: string) {

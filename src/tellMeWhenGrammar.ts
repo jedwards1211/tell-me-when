@@ -64,6 +64,20 @@ export class MonthNameNode extends ParseNode {
         .toLowerCase() as keyof (typeof MonthNameNode)['months']
     ]
   }
+
+  dateFns(input: string): DateFn[] {
+    const month = this.month(input)
+    return [
+      ['setMonth', month],
+      [
+        'closestToNow',
+        [['if', { afterNow: [['addYears', -1]] }]],
+        [['if', { beforeNow: [['addYears', 1]] }]],
+      ],
+      ['startOfMonth'],
+      ['makeInterval', ['addMonths', 1]],
+    ]
+  }
 }
 const MonthNameFull = named(
   'MonthNameFull',
@@ -76,6 +90,63 @@ const MonthNameAbbrev = named(
 ).parseAs(MonthNameNode)
 
 const MonthName = MonthNameFull.or(group(MonthNameAbbrev, group('.').maybe()))
+
+export class RelativeMonthNameNode extends ParseNode {
+  dateFns(input: string): DateFn[] {
+    const month = this.find(MonthNameNode)?.month(input)
+    if (month == null) throw new Error(`failed to find month name node`)
+
+    if (this.find('Next')) {
+      return [
+        ['setMonth', month],
+        ['startOfMonth'],
+        ['if', { beforeNow: [['addYears', 1]] }],
+        ['makeInterval', ['addMonths', 1]],
+      ]
+    }
+    if (this.find('AfterNext')) {
+      return [
+        ['setMonth', month],
+        ['startOfMonth'],
+        ['if', { beforeNow: [['addYears', 1]] }],
+        ['addYears', 1],
+        ['makeInterval', ['addMonths', 1]],
+      ]
+    }
+    if (this.find('Last')) {
+      return [
+        ['setMonth', month],
+        ['startOfMonth'],
+        ['addMonths', 1],
+        ['if', { afterNow: [['addYears', -1]] }],
+        ['addMonths', -1],
+        ['makeInterval', ['addMonths', 1]],
+      ]
+    }
+    if (this.find('BeforeLast')) {
+      return [
+        ['setMonth', month],
+        ['startOfMonth'],
+        ['addMonths', 1],
+        ['if', { afterNow: [['addYears', -1]] }],
+        ['addMonths', -1],
+        ['addYears', -1],
+        ['makeInterval', ['addMonths', 1]],
+      ]
+    }
+    return []
+  }
+}
+
+export const RelativeMonthName = named(
+  'RelativeMonthName',
+  oneOf(
+    group(named('Last', /last/i), space, MonthName),
+    group(named('Next', /next/i), space, MonthName),
+    group(MonthName, space, named('BeforeLast', /before\s+last/i)),
+    group(MonthName, space, named('AfterNext', /after\s+next/i))
+  )
+).parseAs(RelativeMonthNameNode)
 
 const MonthNameNoDot = MonthNameFull.or(MonthNameAbbrev)
 
@@ -577,35 +648,6 @@ export class NowNode extends ParseNode {
 
 const Now = named('Now', /now|(the\s+)?present(\s+time)?/).parseAs(NowNode)
 
-export class DateTimeNode extends ParseNode {
-  date(input: string): DateFn[] | undefined {
-    return (
-      this.find(DateNode) ||
-      this.find(RelativeDayNode) ||
-      this.find(RelativeMonthNode) ||
-      this.find(DateTimeOffsetNode) ||
-      this.find(NowNode)
-    )?.dateFns(input)
-  }
-  time(input: string): DateFn[] | undefined {
-    return this.find(TimeNode)?.dateFns(input)
-  }
-
-  dateFns(input: string): DateFn[] {
-    const Time = this.time(input)
-    const Date = this.date(input)
-    if (Date && Time) {
-      return [
-        ...Date.filter(
-          (op) => op[0] !== 'makeInterval' && !op[0].startsWith('startOf')
-        ),
-        ...Time,
-      ]
-    }
-    return Date || Time || []
-  }
-}
-
 export class QuantityNumNode extends ParseNode {
   quantity(input: string) {
     return parseInt(this.substringOf(input))
@@ -804,20 +846,21 @@ export class DateTimeOffsetNode extends ParseNode {
   }
 }
 
+export const BeforeNow = named(
+  'BeforeNow',
+  oneOf('ago', /in\s+the\s+past/i, group('before', space, Now))
+)
+
+export const AfterNow = named(
+  'AfterNow',
+  oneOf(group(/after|from/i, space, Now), /in\s+the\s+future/i)
+)
+
 export const DateTimeOffset = named(
   'DateTimeOffset',
   DateTimeInterval,
   space.maybe(),
-  oneOf(
-    named(
-      'BeforeNow',
-      oneOf('ago', /in\s+the\s+past/i, group('before', space, Now))
-    ),
-    named(
-      'AfterNow',
-      oneOf(group(/after|from/i, space, Now), /in\s+the\s+future/i)
-    )
-  )
+  oneOf(BeforeNow, AfterNow)
 ).parseAs(DateTimeOffsetNode)
 
 export class RangeEndDateTimeOffsetNode extends DateTimeOffsetNode {
@@ -832,20 +875,21 @@ export const RangeEndDateTimeOffset = named(
   DateTimeInterval,
   space.maybe(),
   oneOf(
-    named(
-      'BeforeNow',
-      oneOf('ago', /in\s+the\s+past/i, group('before', space, Now))
-    ),
-    named(
-      'AfterNow',
-      oneOf(group(/after|from/i, space, Now), /in\s+the\s+future/i)
-    ),
+    BeforeNow,
+    AfterNow,
     named('Later', /after\s+(then|that)|thereafter|later/)
   )
 ).parseAs(RangeEndDateTimeOffsetNode)
 
 export class RelativeDayNode extends ParseNode {
-  dateFns(): DateFn[] {
+  dateFns(input: string): DateFn[] {
+    const quantity = this.find(QuantityNode)?.quantity(input)
+    if (quantity != null) {
+      return [
+        ['addDays', this.find('BeforeNow') ? -quantity : quantity],
+      ] as DateFn[]
+    }
+
     const offset = this.find('Tomorrow')
       ? 1
       : this.find('Yesterday')
@@ -883,8 +927,8 @@ export const RelativeDay = named('RelativeDay', RelativeDayBase).parseAs(
 )
 
 export class RangeEndRelativeDayNode extends RelativeDayNode {
-  dateFns(): DateFn[] {
-    return [['now'], ...super.dateFns()]
+  dateFns(input: string): DateFn[] {
+    return [['now'], ...super.dateFns(input)]
   }
 }
 
@@ -893,63 +937,415 @@ export const RangeEndRelativeDay = named(
   RelativeDayBase
 ).parseAs(RangeEndRelativeDayNode)
 
-const SpecificDay = oneOf(RelativeDay, DayDate)
-const RangeEndSpecificDay = oneOf(RangeEndRelativeDay, DayDate)
+export class DayOfWeekNode extends ParseNode {
+  dayOfWeek(input: string): number {
+    switch (this.substringOf(input).toLowerCase()) {
+      case 'sunday':
+      case 'sun':
+        return 0
+      case 'monday':
+      case 'mon':
+        return 1
+      case 'tuesday':
+      case 'tues':
+      case 'tue':
+        return 2
+      case 'wednesday':
+      case 'wed':
+        return 3
+      case 'thursday':
+      case 'thurs':
+      case 'thur':
+      case 'thu':
+        return 4
+      case 'friday':
+      case 'fri':
+        return 5
+      case 'saturday':
+      case 'sat':
+        return 6
+    }
+    throw new Error(`invalid day of week: ${this.substringOf(input)}`)
+  }
 
-export class RelativeMonthNode extends ParseNode {
-  dateFns(): DateFn[] {
-    const offset = this.find('NextMonth')
-      ? 1
-      : this.find('LastMonth')
-      ? -1
-      : this.find('MonthBeforeLast')
-      ? -2
-      : this.find('MonthAfterNext')
-      ? 2
-      : 0
+  dateFns(input: string): DateFn[] {
+    const dayOfWeek = this.dayOfWeek(input)
 
     return [
-      ...(offset ? ([['addMonths', offset]] as DateFn[]) : []),
-      ['startOfMonth'],
-      ['makeInterval', ['addMonths', 1]],
+      ['setDay', dayOfWeek],
+      [
+        'closestToNow',
+        [['if', { afterNow: [['addWeeks', -1]] }]],
+        [['if', { beforeNow: [['addWeeks', 1]] }]],
+      ],
+      ['startOfDay'],
+      ['makeInterval', ['addDays', 1]],
     ]
   }
 }
 
-const RelativeMonthBase = oneOf(
-  named('ThisMonth', /this\s+month/i),
-  named('LastMonth', /last\s+month/i),
-  named('NextMonth', /next\s+month/i),
-  group(
-    group('the', space).maybe(),
-    group('month', space),
-    oneOf(
-      named('MonthBeforeLast', group('before', space, 'last')),
-      named('MonthAfterNext', group('after', space, 'next'))
+export const DayOfWeek = named(
+  'DayOfWeek',
+  /sun(day)?|tue(s(day)?)?|wed(nesday)?|thu(r(s(day)?)?)?|fri(day)?|sat(urday)?/i
+).parseAs(DayOfWeekNode)
+
+export class RelativeDayOfWeekNode extends ParseNode {
+  dateFns(input: string): DateFn[] {
+    const dayOfWeek = this.find(DayOfWeekNode)?.dayOfWeek(input)
+    if (dayOfWeek == null) throw new Error(`failed to find DayOfWeekNode`)
+    if (this.find('Next')) {
+      return [
+        ['setDay', dayOfWeek],
+        ['startOfDay'],
+        ['if', { beforeNow: [['addWeeks', 1]] }],
+        ['makeInterval', ['addDays', 1]],
+      ]
+    }
+    if (this.find('AfterNext')) {
+      return [
+        ['setDay', dayOfWeek],
+        ['startOfDay'],
+        ['if', { beforeNow: [['addWeeks', 1]] }],
+        ['addWeeks', 1],
+        ['makeInterval', ['addDays', 1]],
+      ]
+    }
+    if (this.find('Last')) {
+      return [
+        ['setDay', dayOfWeek],
+        ['startOfDay'],
+        ['addDays', 1],
+        ['if', { afterNow: [['addWeeks', -1]] }],
+        ['addDays', -1],
+        ['makeInterval', ['addDays', 1]],
+      ]
+    }
+    if (this.find('BeforeLast')) {
+      return [
+        ['setDay', dayOfWeek],
+        ['startOfDay'],
+        ['addDays', 1],
+        ['if', { afterNow: [['addWeeks', -1]] }],
+        ['addDays', -1],
+        ['addWeeks', -1],
+        ['makeInterval', ['addDays', 1]],
+      ]
+    }
+    return []
+  }
+}
+
+export const RelativeDayOfWeek = named(
+  'RelativeDayOfWeek',
+  oneOf(
+    group(named('Last', 'last'), space, DayOfWeek),
+    group(named('Next', 'next'), space, DayOfWeek),
+    group(DayOfWeek, space, named('BeforeLast', /before\s+last/i)),
+    group(DayOfWeek, space, named('AfterNext', /after\s+next/i))
+  )
+).parseAs(RelativeDayOfWeekNode)
+
+const SpecificDay = oneOf(RelativeDay, DayDate, RelativeDayOfWeek, DayOfWeek)
+const RangeEndSpecificDay = oneOf(RangeEndRelativeDay, DayDate)
+
+type RelativeIntervalType =
+  | 'Second'
+  | 'Minute'
+  | 'Day'
+  | 'Hour'
+  | 'Week'
+  | 'Month'
+  | 'Year'
+
+export abstract class RelativeIntervalNode extends ParseNode {
+  abstract get intervalName(): RelativeIntervalType
+
+  dateFns(): DateFn[] {
+    const { intervalName } = this
+
+    const offset = this.find(`Next${intervalName}`)
+      ? 1
+      : this.find(`Last${intervalName}`)
+      ? -1
+      : this.find(`${intervalName}BeforeLast`)
+      ? -2
+      : this.find(`${intervalName}AfterNext`)
+      ? 2
+      : 0
+
+    return [
+      ...(offset ? ([[`add${intervalName}s`, offset]] as DateFn[]) : []),
+      [`startOf${intervalName}`],
+      [`makeInterval`, [`add${intervalName}s`, 1]],
+    ]
+  }
+}
+
+export class RelativeSecondNode extends RelativeIntervalNode {
+  get intervalName(): 'Second' {
+    return 'Second'
+  }
+}
+export class RelativeMinuteNode extends RelativeIntervalNode {
+  get intervalName(): 'Minute' {
+    return 'Minute'
+  }
+}
+export class RelativeHourNode extends RelativeIntervalNode {
+  get intervalName(): 'Hour' {
+    return 'Hour'
+  }
+}
+export class RelativeWeekNode extends RelativeIntervalNode {
+  get intervalName(): 'Week' {
+    return 'Week'
+  }
+}
+export class RelativeMonthNode extends RelativeIntervalNode {
+  get intervalName(): 'Month' {
+    return 'Month'
+  }
+}
+export class RelativeYearNode extends RelativeIntervalNode {
+  get intervalName(): 'Year' {
+    return 'Year'
+  }
+}
+
+const RelativeIntervalNodes = {
+  Second: RelativeSecondNode,
+  Minute: RelativeMinuteNode,
+  Hour: RelativeHourNode,
+  Week: RelativeWeekNode,
+  Month: RelativeMonthNode,
+  Year: RelativeYearNode,
+}
+
+const RelativeIntervalBase = (intervalName: RelativeIntervalType) =>
+  oneOf(
+    named(`This${intervalName}`, new RegExp(`this\\s+${intervalName}`, 'i')),
+    named(`Last${intervalName}`, new RegExp(`last\\s+${intervalName}`, 'i')),
+    named(`Next${intervalName}`, new RegExp(`next\\s+${intervalName}`, 'i')),
+    named(
+      `${intervalName}BeforeLast`,
+      new RegExp(`(the\\s+)?${intervalName}\\s+before\\s+last`, 'i')
+    ),
+    named(
+      `${intervalName}AfterNext`,
+      new RegExp(`(the\\s+)?${intervalName}\\s+after\\s+next`, 'i')
     )
   )
-)
 
-export const RelativeMonth = named('RelativeMonth', RelativeMonthBase).parseAs(
-  RelativeMonthNode
-)
+const RelativeInterval = (intervalName: Exclude<RelativeIntervalType, 'Day'>) =>
+  named(`Relative${intervalName}`, RelativeIntervalBase(intervalName)).parseAs(
+    RelativeIntervalNodes[intervalName]
+  )
 
-export class RangeEndRelativeMonthNode extends RelativeMonthNode {
+export const RelativeSecond = RelativeInterval('Second')
+export const RelativeMinute = RelativeInterval('Minute')
+export const RelativeHour = RelativeInterval('Hour')
+export const RelativeWeek = RelativeInterval('Week')
+export const RelativeMonth = RelativeInterval('Month')
+export const RelativeYear = RelativeInterval('Year')
+
+export abstract class RangeEndRelativeIntervalNode extends RelativeIntervalNode {
   dateFns(): DateFn[] {
     return [['now'], ...super.dateFns()]
   }
 }
 
-export const RangeEndRelativeMonth = named(
-  'RangeEndRelativeMonth',
-  RelativeMonthBase
-).parseAs(RangeEndRelativeMonthNode)
+export class RangeEndRelativeSecondNode extends RangeEndRelativeIntervalNode {
+  get intervalName(): 'Second' {
+    return 'Second'
+  }
+}
+export class RangeEndRelativeMinuteNode extends RangeEndRelativeIntervalNode {
+  get intervalName(): 'Minute' {
+    return 'Minute'
+  }
+}
+export class RangeEndRelativeHourNode extends RangeEndRelativeIntervalNode {
+  get intervalName(): 'Hour' {
+    return 'Hour'
+  }
+}
+export class RangeEndRelativeWeekNode extends RangeEndRelativeIntervalNode {
+  get intervalName(): 'Week' {
+    return 'Week'
+  }
+}
+export class RangeEndRelativeMonthNode extends RangeEndRelativeIntervalNode {
+  get intervalName(): 'Month' {
+    return 'Month'
+  }
+}
+export class RangeEndRelativeYearNode extends RangeEndRelativeIntervalNode {
+  get intervalName(): 'Year' {
+    return 'Year'
+  }
+}
+
+const RangeEndRelativeIntervalNodes = {
+  Second: RangeEndRelativeSecondNode,
+  Minute: RangeEndRelativeMinuteNode,
+  Hour: RangeEndRelativeHourNode,
+  Week: RangeEndRelativeWeekNode,
+  Month: RangeEndRelativeMonthNode,
+  Year: RangeEndRelativeYearNode,
+}
+
+export const RangeEndRelativeInterval = (
+  intervalName: Exclude<RelativeIntervalType, 'Day'>
+) =>
+  named(
+    `RangeEndRelative${intervalName}`,
+    RelativeIntervalBase(intervalName)
+  ).parseAs(RangeEndRelativeIntervalNodes[intervalName])
+
+export const RangeEndRelativeSecond = RangeEndRelativeInterval('Second')
+export const RangeEndRelativeMinute = RangeEndRelativeInterval('Minute')
+export const RangeEndRelativeHour = RangeEndRelativeInterval('Hour')
+export const RangeEndRelativeWeek = RangeEndRelativeInterval('Week')
+export const RangeEndRelativeMonth = RangeEndRelativeInterval('Month')
+export const RangeEndRelativeYear = RangeEndRelativeInterval('Year')
+
+function negateDateFns(dateFns: DateFn[]): DateFn[] {
+  return dateFns.map((fn) => {
+    switch (fn[0]) {
+      case 'addDays':
+      case 'addHours':
+      case 'addMilliseconds':
+      case 'addMinutes':
+      case 'addMonths':
+      case 'addSeconds':
+      case 'addWeeks':
+      case 'addYears':
+        return [fn[0], -fn[1]]
+    }
+    return fn
+  })
+}
+
+class DateTimeOffsetIntervalUnitNode extends ParseNode {
+  dateFns(input: string): DateFn[] {
+    switch (this.substringOf(input).toLowerCase()) {
+      case 'year':
+      case 'yr':
+        return [['addYears', 1]]
+      case 'month':
+      case 'mon':
+        return [['addMonths', 1]]
+      case 'week':
+      case 'wk':
+        return [['addWeeks', 1]]
+      case 'day':
+        return [['addDays', 1]]
+      case 'hour':
+      case 'hr':
+        return [['addHours', 1]]
+      case 'minute':
+      case 'min':
+        return [['addMinutes', 1]]
+      case 'second':
+      case 'sec':
+        return [['addSeconds', 1]]
+    }
+    throw new Error(`invalid input`)
+  }
+}
+
+const DateTimeOffsetIntervalUnit = named(
+  'DateTimeOffsetIntervalUnit',
+  /year|yr|month|mon|week|wk|day|hour|hr|minute|min|second|sec/i
+).parseAs(DateTimeOffsetIntervalUnitNode)
+
+export class DateTimeOffsetIntervalNode extends ParseNode {
+  dateFns(input: string): DateFn[] {
+    const fns =
+      this.find(DateTimeIntervalNode)?.dateFns(input) ??
+      this.find(DateTimeOffsetIntervalUnitNode)?.dateFns(input)
+    if (!fns) throw new Error(`expected to find a DateTimeIntervalNode`)
+    return this.find('Past')
+      ? [...negateDateFns(fns), ['makeInterval', ['now']]]
+      : [['makeInterval', ...fns]]
+  }
+}
+
+export class RangeEndDateTimeOffsetIntervalNode extends DateTimeOffsetIntervalNode {
+  dateFns(input: string): DateFn[] {
+    return [['now'], ...super.dateFns(input)]
+  }
+}
+
+export const DateTimeOffsetIntervalBase = group(
+  oneOf(
+    named('Past', /the\s+(past|last)/i),
+    named('Future', /the\s+(next|coming)/i)
+  ),
+  space,
+  oneOf(DateTimeInterval, DateTimeOffsetIntervalUnit)
+)
+
+export const DateTimeOffsetInterval = named(
+  'DateTimeOffsetInterval',
+  DateTimeOffsetIntervalBase
+).parseAs(DateTimeOffsetIntervalNode)
+
+export const RangeEndDateTimeOffsetInterval = named(
+  'RangeEndDateTimeOffsetInterval',
+  DateTimeOffsetIntervalBase
+).parseAs(RangeEndDateTimeOffsetIntervalNode)
+
+export class DateTimeNode extends ParseNode {
+  date(input: string): DateFn[] | undefined {
+    return (
+      this.find(DateNode) ||
+      this.find(RelativeDayNode) ||
+      this.find(RelativeDayOfWeekNode) ||
+      this.find(DayOfWeekNode) ||
+      this.find(RelativeIntervalNode) ||
+      this.find(RelativeMonthNameNode) ||
+      this.find(MonthNameNode) ||
+      this.find(DateTimeOffsetNode) ||
+      this.find(DateTimeOffsetIntervalNode) ||
+      this.find(NowNode)
+    )?.dateFns(input)
+  }
+  time(input: string): DateFn[] | undefined {
+    return this.find(TimeNode)?.dateFns(input)
+  }
+
+  dateFns(input: string): DateFn[] {
+    const Time = this.time(input)
+    const Date = this.date(input)
+    if (Date && Time) {
+      const lastIfIndex = Date.findIndex((op) => op[0] === 'if')
+      return [
+        ...Date.filter(
+          (op, index) =>
+            op[0] !== 'makeInterval' &&
+            (index < lastIfIndex || !op[0].startsWith('startOf'))
+        ),
+        ...Time,
+      ]
+    }
+    return Date || Time || []
+  }
+}
 
 export const DateTime = named(
   'DateTime',
   longestOf(
     Date,
+    RelativeSecond,
+    RelativeMinute,
+    RelativeHour,
+    RelativeWeek,
+    RelativeMonthName,
+    MonthName,
     RelativeMonth,
+    RelativeYear,
+    DateTimeOffsetInterval,
     group(
       oneOf(DateTimeOffset, SpecificDay),
       group(space, group('at', space).maybe(), AtTime).maybe()
@@ -964,7 +1360,13 @@ export const RangeEndDateTime = named(
   'RangeEndDateTime',
   longestOf(
     Date,
+    RangeEndRelativeSecond,
+    RangeEndRelativeMinute,
+    RangeEndRelativeHour,
+    RangeEndRelativeWeek,
     RangeEndRelativeMonth,
+    RangeEndRelativeYear,
+    RangeEndDateTimeOffsetInterval,
     group(
       oneOf(RangeEndDateTimeOffset, RangeEndSpecificDay),
       group(space, group('at', space).maybe(), AtTime).maybe()

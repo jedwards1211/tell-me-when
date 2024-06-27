@@ -56,17 +56,22 @@ export class ParseNode {
   }
 
   find<N extends ParseNode>(
-    predicate: (new (...args: any[]) => N) | ((node: ParseNode) => node is N)
+    predicate:
+      | (abstract new (...args: any[]) => N)
+      | (new (...args: any[]) => N)
+      | ((node: ParseNode) => node is N)
   ): N | undefined
   find(
     predicate:
       | string
+      | (abstract new (...args: any[]) => ParseNode)
       | (new (...args: any[]) => ParseNode)
       | ((node: ParseNode) => boolean)
   ): ParseNode | undefined
   find(
     predicate:
       | string
+      | (abstract new (...args: any[]) => ParseNode)
       | (new (...args: any[]) => ParseNode)
       | ((node: ParseNode) => boolean)
   ): ParseNode | undefined {
@@ -77,17 +82,22 @@ export class ParseNode {
   }
 
   findAll<N extends ParseNode>(
-    predicate: (new (...args: any[]) => N) | ((node: ParseNode) => node is N)
+    predicate:
+      | (abstract new (...args: any[]) => N)
+      | (new (...args: any[]) => N)
+      | ((node: ParseNode) => node is N)
   ): Iterable<N>
   findAll(
     predicate:
       | string
+      | (abstract new (...args: any[]) => ParseNode)
       | (new (...args: any[]) => ParseNode)
       | ((node: ParseNode) => boolean)
   ): Iterable<ParseNode>
   *findAll(
     predicate:
       | string
+      | (abstract new (...args: any[]) => ParseNode)
       | (new (...args: any[]) => ParseNode)
       | ((node: ParseNode) => boolean)
   ): Iterable<ParseNode> {
