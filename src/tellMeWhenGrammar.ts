@@ -512,13 +512,19 @@ const Date = named(
     ),
     group(
       MonthName,
-      group(
-        space,
-        DayOfMonth,
+      longestOf(
+        group(
+          space,
+          DayOfMonth,
+          group(
+            space.or(group(space.maybe(), ',', space.maybe())),
+            oneOf(YearNum, RelativeYear)
+          ).maybe()
+        ),
         group(
           space.or(group(space.maybe(), ',', space.maybe())),
           oneOf(YearNum, RelativeYear)
-        ).maybe()
+        )
       ).maybe()
     ),
     group(RelativeMonthName, group(space, DayOfMonth).maybe()),
@@ -535,17 +541,14 @@ const Date = named(
     ),
     group(
       MonthNum,
-      oneOf(
+      longestOf(
+        group(/[- ._/]/, FullYear),
         group(NthDayOfMonth, YearNum.maybe()),
         group('.', DayOfMonth, group('.', YearNum).maybe()),
         group('-', DayOfMonth, group('-', YearNum).maybe()),
         group('_', DayOfMonth, group('_', YearNum).maybe()),
         group('/', DayOfMonth, group('/', YearNum).maybe()),
-        group(
-          space,
-          DayOfMonth,
-          group(space, oneOf(YearNum, RelativeYear)).maybe()
-        )
+        group(space, DayOfMonth, group(space, YearNum).maybe())
       )
     ),
     group(
@@ -576,7 +579,8 @@ const Date = named(
         group('-', MonthNoDot, group('-', YearNum).maybe()),
         group('_', MonthNoDot, group('_', YearNum).maybe()),
         group('/', MonthNoDot, group('/', YearNum).maybe()),
-        group(space, Month, group(space, oneOf(YearNum, RelativeYear)).maybe())
+        group(space, MonthName, group(space, RelativeYear).maybe()),
+        group(space, Month, group(space, YearNum).maybe())
       )
     )
   )

@@ -17,6 +17,7 @@ export const parseTestcases: Record<
     ['startOfMonth'],
     ['makeInterval', ['addMonths', 1]],
   ],
+  'aug 2021': { ref: '2021aug' },
   '202aug': 'error',
   '2021au': 'error',
   '2021augu': 'error',
