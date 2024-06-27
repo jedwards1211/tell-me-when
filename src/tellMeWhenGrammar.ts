@@ -13,6 +13,10 @@ export class FullYearNode extends ParseNode {
   year(input: string) {
     return parseInt(this.substringOf(input))
   }
+
+  dateFns(input: string): DateFn[] {
+    return [['setYear', this.year(input)]]
+  }
 }
 const FullYear = token(/\d{4}/).parseAs(FullYearNode)
 
@@ -25,10 +29,14 @@ export class TwoDigitYearNode extends ParseNode {
     const digits = parseInt(this.substringOf(input).replace(/^'/, ''))
     return digits >= 70 ? 1900 + digits : 2000 + digits
   }
+
+  dateFns(input: string): DateFn[] {
+    return [['setYear', this.year(input)]]
+  }
 }
 const TwoDigitYear = token(/'?\d\d/).parseAs(TwoDigitYearNode)
 
-const Year = FullYear.or(TwoDigitYear)
+const YearNum = FullYear.or(TwoDigitYear)
 
 export class MonthNumNode extends ParseNode {
   constructor(public wrapped: ParseNode) {
@@ -37,6 +45,19 @@ export class MonthNumNode extends ParseNode {
 
   month(input: string) {
     return parseInt(this.substringOf(input)) - 1
+  }
+
+  dateFns(input: string): DateFn[] {
+    return [
+      ['setMonth', this.month(input)],
+      [
+        'closestToNow',
+        [['if', { afterNow: [['addYears', -1]] }]],
+        [['if', { beforeNow: [['addYears', 1]] }]],
+      ],
+      ['startOfMonth'],
+      ['makeInterval', ['addMonths', 1]],
+    ]
   }
 }
 const MonthNum = token(/0?[1-9]|1[0-2]/).parseAs(MonthNumNode)
@@ -274,14 +295,127 @@ const NthDayOfMonth = token(
 
 const DayOfMonth = NthDayOfMonth.or(DayOfMonthNum)
 
+type RelativeIntervalType =
+  | 'Second'
+  | 'Minute'
+  | 'Day'
+  | 'Hour'
+  | 'Week'
+  | 'Month'
+  | 'Year'
+
+export abstract class RelativeIntervalNode extends ParseNode {
+  abstract get intervalName(): RelativeIntervalType
+
+  dateFns(): DateFn[] {
+    const { intervalName } = this
+
+    const offset = this.find(`Next${intervalName}`)
+      ? 1
+      : this.find(`Last${intervalName}`)
+      ? -1
+      : this.find(`${intervalName}BeforeLast`)
+      ? -2
+      : this.find(`${intervalName}AfterNext`)
+      ? 2
+      : 0
+
+    return [
+      ...(offset ? ([[`add${intervalName}s`, offset]] as DateFn[]) : []),
+      [`startOf${intervalName}`],
+      [`makeInterval`, [`add${intervalName}s`, 1]],
+    ]
+  }
+}
+
+export class RelativeSecondNode extends RelativeIntervalNode {
+  get intervalName(): 'Second' {
+    return 'Second'
+  }
+}
+export class RelativeMinuteNode extends RelativeIntervalNode {
+  get intervalName(): 'Minute' {
+    return 'Minute'
+  }
+}
+export class RelativeHourNode extends RelativeIntervalNode {
+  get intervalName(): 'Hour' {
+    return 'Hour'
+  }
+}
+export class RelativeWeekNode extends RelativeIntervalNode {
+  get intervalName(): 'Week' {
+    return 'Week'
+  }
+}
+export class RelativeMonthNode extends RelativeIntervalNode {
+  get intervalName(): 'Month' {
+    return 'Month'
+  }
+}
+export class RelativeYearNode extends RelativeIntervalNode {
+  get intervalName(): 'Year' {
+    return 'Year'
+  }
+}
+
+const RelativeIntervalNodes = {
+  Second: RelativeSecondNode,
+  Minute: RelativeMinuteNode,
+  Hour: RelativeHourNode,
+  Week: RelativeWeekNode,
+  Month: RelativeMonthNode,
+  Year: RelativeYearNode,
+}
+
+const RelativeIntervalBase = (intervalName: RelativeIntervalType) =>
+  oneOf(
+    named(`This${intervalName}`, new RegExp(`this\\s+${intervalName}`, 'i')),
+    named(`Last${intervalName}`, new RegExp(`last\\s+${intervalName}`, 'i')),
+    named(`Next${intervalName}`, new RegExp(`next\\s+${intervalName}`, 'i')),
+    named(
+      `${intervalName}BeforeLast`,
+      new RegExp(`(the\\s+)?${intervalName}\\s+before\\s+last`, 'i')
+    ),
+    named(
+      `${intervalName}AfterNext`,
+      new RegExp(`(the\\s+)?${intervalName}\\s+after\\s+next`, 'i')
+    )
+  )
+
+const RelativeInterval = (intervalName: Exclude<RelativeIntervalType, 'Day'>) =>
+  named(`Relative${intervalName}`, RelativeIntervalBase(intervalName)).parseAs(
+    RelativeIntervalNodes[intervalName]
+  )
+
+export const RelativeSecond = RelativeInterval('Second')
+export const RelativeMinute = RelativeInterval('Minute')
+export const RelativeHour = RelativeInterval('Hour')
+export const RelativeWeek = RelativeInterval('Week')
+export const RelativeMonth = RelativeInterval('Month')
+export const RelativeYear = RelativeInterval('Year')
+
 export class DateNode extends ParseNode {
-  year(input: string) {
-    return (this?.find(FullYearNode) || this?.find(TwoDigitYearNode))?.year(
-      input
+  yearFns(input: string): DateFn[] | undefined {
+    return (
+      (this.find(FullYearNode) || this.find(TwoDigitYearNode))?.dateFns(
+        input
+      ) ||
+      this.find(RelativeYearNode)
+        ?.dateFns()
+        .filter((fn) => fn[0] === 'addYears')
     )
   }
-  month(input: string) {
-    return (this?.find(MonthNumNode) || this?.find(MonthNameNode))?.month(input)
+  monthFns(input: string): DateFn[] | undefined {
+    const month = (
+      this?.find(MonthNumNode) || this?.find(MonthNameNode)
+    )?.month(input)
+    return month ? [['setMonth', month]] : undefined
+  }
+  relativeMonthFns(input: string): DateFn[] | undefined {
+    return this.find(RelativeMonthNameNode)
+      ?.dateFns(input)
+      .filter((fn) => fn[0] !== 'makeInterval')
   }
   day(input: string) {
     return (
@@ -290,43 +424,58 @@ export class DateNode extends ParseNode {
   }
 
   dateFns(input: string): DateFn[] {
-    const year = this.year(input)
-    const month = this.month(input)
+    const year = this.yearFns(input)
+    const relativeMonth = this.relativeMonthFns(input)
+    const month = relativeMonth || this.monthFns(input)
     const day = this.day(input)
 
     if (year == null) {
       return [
-        ...(month != null ? ([['setMonth', month]] as DateFn[]) : []),
-        ...(day != null ? ([['setDate', day]] as DateFn[]) : []),
-        [
-          day != null
-            ? 'startOfDay'
-            : month != null
-            ? 'startOfMonth'
-            : 'startOfYear',
-        ],
-        [
-          'closestToNow',
-          [
-            [
-              'if',
-              { afterNow: [[month != null ? 'addYears' : 'addMonths', -1]] },
-            ],
-          ],
-          [
-            [
-              'if',
-              { beforeNow: [[month != null ? 'addYears' : 'addMonths', 1]] },
-            ],
-          ],
-        ],
+        ...(month || []),
+        ...(day != null ? ([['setDate', day]] satisfies DateFn[]) : []),
+        ...((relativeMonth
+          ? day != null
+            ? [['startOfDay']]
+            : []
+          : [
+              [
+                day != null
+                  ? 'startOfDay'
+                  : month != null
+                  ? 'startOfMonth'
+                  : 'startOfYear',
+              ],
+              [
+                'closestToNow',
+                [
+                  [
+                    'if',
+                    {
+                      afterNow: [
+                        [month != null ? 'addYears' : 'addMonths', -1],
+                      ],
+                    },
+                  ],
+                ],
+                [
+                  [
+                    'if',
+                    {
+                      beforeNow: [
+                        [month != null ? 'addYears' : 'addMonths', 1],
+                      ],
+                    },
+                  ],
+                ],
+              ],
+            ]) satisfies DateFn[]),
         ['makeInterval', [day != null ? 'addDays' : 'addMonths', 1]],
       ]
     }
 
     return [
-      ['setYear', year],
-      ...(month != null ? ([['setMonth', month]] as DateFn[]) : []),
+      ...(year || []),
+      ...(month || []),
       ...(day != null ? ([['setDate', day]] as DateFn[]) : []),
       [
         day != null
@@ -358,51 +507,63 @@ const Date = named(
       ).maybe()
     ),
     group(
+      RelativeYear,
+      group(space, Month, group(space, DayOfMonth).maybe()).maybe()
+    ),
+    group(
       MonthName,
       group(
         space,
         DayOfMonth,
-        group(space.or(group(space.maybe(), ',', space.maybe())), Year).maybe()
+        group(
+          space.or(group(space.maybe(), ',', space.maybe())),
+          oneOf(YearNum, RelativeYear)
+        ).maybe()
       ).maybe()
     ),
+    group(RelativeMonthName, group(space, DayOfMonth).maybe()),
     group(
       MonthNameNoDot,
       oneOf(
-        group('.', DayOfMonth, group('.', Year).maybe()),
-        group(NthDayOfMonth, Year.maybe()),
+        group('.', DayOfMonth, group('.', YearNum).maybe()),
+        group(NthDayOfMonth, YearNum.maybe()),
         DayOfMonth,
-        group('-', DayOfMonth, group('-', Year).maybe()),
-        group('_', DayOfMonth, group('_', Year).maybe()),
-        group('/', DayOfMonth, group('/', Year).maybe())
+        group('-', DayOfMonth, group('-', YearNum).maybe()),
+        group('_', DayOfMonth, group('_', YearNum).maybe()),
+        group('/', DayOfMonth, group('/', YearNum).maybe())
       ).maybe()
     ),
     group(
       MonthNum,
       oneOf(
-        group(NthDayOfMonth, Year.maybe()),
-        group('.', DayOfMonth, group('.', Year).maybe()),
-        group('-', DayOfMonth, group('-', Year).maybe()),
-        group('_', DayOfMonth, group('_', Year).maybe()),
-        group('/', DayOfMonth, group('/', Year).maybe()),
-        group(space, DayOfMonth, group(space, Year).maybe())
+        group(NthDayOfMonth, YearNum.maybe()),
+        group('.', DayOfMonth, group('.', YearNum).maybe()),
+        group('-', DayOfMonth, group('-', YearNum).maybe()),
+        group('_', DayOfMonth, group('_', YearNum).maybe()),
+        group('/', DayOfMonth, group('/', YearNum).maybe()),
+        group(
+          space,
+          DayOfMonth,
+          group(space, oneOf(YearNum, RelativeYear)).maybe()
+        )
       )
     ),
     group(
       group('the', space).maybe(),
       NthDayOfMonth,
       oneOf(
-        group(MonthNameNoDot, Year.maybe()),
-        group('.', MonthNoDot, group('.', Year).maybe()),
-        group('-', MonthNoDot, group('-', Year).maybe()),
-        group('_', MonthNoDot, group('_', Year).maybe()),
-        group('/', MonthNoDot, group('/', Year).maybe()),
+        group(MonthNameNoDot, YearNum.maybe()),
+        group('.', MonthNoDot, group('.', YearNum).maybe()),
+        group('-', MonthNoDot, group('-', YearNum).maybe()),
+        group('_', MonthNoDot, group('_', YearNum).maybe()),
+        group('/', MonthNoDot, group('/', YearNum).maybe()),
         group(
           space,
           group(group('day', space).maybe(), 'of', space).maybe(),
           MonthName,
           group(
             space.or(group(space.maybe(), ',', space.maybe())),
-            Year
+            oneOf(YearNum, RelativeYear)
           ).maybe()
         )
       ).maybe()
@@ -410,12 +571,12 @@ const Date = named(
     group(
       DayOfMonthNum,
       oneOf(
-        group(MonthNameNoDot, Year.maybe()),
-        group('.', MonthNoDot, group('.', Year).maybe()),
-        group('-', MonthNoDot, group('-', Year).maybe()),
-        group('_', MonthNoDot, group('_', Year).maybe()),
-        group('/', MonthNoDot, group('/', Year).maybe()),
-        group(space, Month, group(space, Year).maybe())
+        group(MonthNameNoDot, YearNum.maybe()),
+        group('.', MonthNoDot, group('.', YearNum).maybe()),
+        group('-', MonthNoDot, group('-', YearNum).maybe()),
+        group('_', MonthNoDot, group('_', YearNum).maybe()),
+        group('/', MonthNoDot, group('/', YearNum).maybe()),
+        group(space, Month, group(space, oneOf(YearNum, RelativeYear)).maybe())
       )
     )
   )
@@ -435,52 +596,61 @@ const DayDate = named(
         group(space, Month, group(space, DayOfMonth))
       ).maybe()
     ),
+    group(RelativeYear, space, Month, group(space, DayOfMonth)),
     group(
       MonthName,
       group(
         space,
         DayOfMonth,
-        group(space.or(group(space.maybe(), ',', space.maybe())), Year).maybe()
+        group(
+          space.or(group(space.maybe(), ',', space.maybe())),
+          oneOf(YearNum, RelativeYear)
+        ).maybe()
       )
     ),
+    group(RelativeMonthName, group(space, DayOfMonth)),
     group(
       MonthNameNoDot,
       oneOf(
-        group('.', DayOfMonth, group('.', Year).maybe()),
-        group(NthDayOfMonth, Year.maybe()),
+        group('.', DayOfMonth, group('.', YearNum).maybe()),
+        group(NthDayOfMonth, YearNum.maybe()),
         DayOfMonth,
-        group('-', DayOfMonth, group('-', Year).maybe()),
-        group('_', DayOfMonth, group('_', Year).maybe()),
-        group('/', DayOfMonth, group('/', Year).maybe())
+        group('-', DayOfMonth, group('-', YearNum).maybe()),
+        group('_', DayOfMonth, group('_', YearNum).maybe()),
+        group('/', DayOfMonth, group('/', YearNum).maybe())
       )
     ),
     group(
       MonthNum,
       oneOf(
-        group(NthDayOfMonth, Year.maybe()),
-        group('.', DayOfMonth, group('.', Year).maybe()),
-        group('-', DayOfMonth, group('-', Year).maybe()),
-        group('_', DayOfMonth, group('_', Year).maybe()),
-        group('/', DayOfMonth, group('/', Year).maybe()),
-        group(space, DayOfMonth, group(space, Year).maybe())
+        group(NthDayOfMonth, YearNum.maybe()),
+        group('.', DayOfMonth, group('.', YearNum).maybe()),
+        group('-', DayOfMonth, group('-', YearNum).maybe()),
+        group('_', DayOfMonth, group('_', YearNum).maybe()),
+        group('/', DayOfMonth, group('/', YearNum).maybe()),
+        group(
+          space,
+          DayOfMonth,
+          group(space, oneOf(YearNum, RelativeYear)).maybe()
+        )
       )
     ),
     group(
       group('the', space).maybe(),
       NthDayOfMonth,
       oneOf(
-        group(MonthNameNoDot, Year.maybe()),
-        group('.', MonthNoDot, group('.', Year).maybe()),
-        group('-', MonthNoDot, group('-', Year).maybe()),
-        group('_', MonthNoDot, group('_', Year).maybe()),
-        group('/', MonthNoDot, group('/', Year).maybe()),
+        group(MonthNameNoDot, YearNum.maybe()),
+        group('.', MonthNoDot, group('.', YearNum).maybe()),
+        group('-', MonthNoDot, group('-', YearNum).maybe()),
+        group('_', MonthNoDot, group('_', YearNum).maybe()),
+        group('/', MonthNoDot, group('/', YearNum).maybe()),
         group(
           space,
           group(group('day', space).maybe(), 'of', space).maybe(),
           MonthName,
           group(
             space.or(group(space.maybe(), ',', space.maybe())),
-            Year
+            oneOf(YearNum, RelativeYear)
           ).maybe()
         )
       ).maybe()
@@ -488,12 +658,12 @@ const DayDate = named(
     group(
       DayOfMonthNum,
       oneOf(
-        group(MonthNameNoDot, Year.maybe()),
-        group('.', MonthNoDot, group('.', Year).maybe()),
-        group('-', MonthNoDot, group('-', Year).maybe()),
-        group('_', MonthNoDot, group('_', Year).maybe()),
-        group('/', MonthNoDot, group('/', Year).maybe()),
-        group(space, Month, group(space, Year).maybe())
+        group(MonthNameNoDot, YearNum.maybe()),
+        group('.', MonthNoDot, group('.', YearNum).maybe()),
+        group('-', MonthNoDot, group('-', YearNum).maybe()),
+        group('_', MonthNoDot, group('_', YearNum).maybe()),
+        group('/', MonthNoDot, group('/', YearNum).maybe()),
+        group(space, Month, group(space, oneOf(YearNum, RelativeYear)).maybe())
       )
     )
   )
@@ -1048,106 +1218,6 @@ export const RelativeDayOfWeek = named(
 const SpecificDay = oneOf(RelativeDay, DayDate, RelativeDayOfWeek, DayOfWeek)
 const RangeEndSpecificDay = oneOf(RangeEndRelativeDay, DayDate)
 
-type RelativeIntervalType =
-  | 'Second'
-  | 'Minute'
-  | 'Day'
-  | 'Hour'
-  | 'Week'
-  | 'Month'
-  | 'Year'
-
-export abstract class RelativeIntervalNode extends ParseNode {
-  abstract get intervalName(): RelativeIntervalType
-
-  dateFns(): DateFn[] {
-    const { intervalName } = this
-
-    const offset = this.find(`Next${intervalName}`)
-      ? 1
-      : this.find(`Last${intervalName}`)
-      ? -1
-      : this.find(`${intervalName}BeforeLast`)
-      ? -2
-      : this.find(`${intervalName}AfterNext`)
-      ? 2
-      : 0
-
-    return [
-      ...(offset ? ([[`add${intervalName}s`, offset]] as DateFn[]) : []),
-      [`startOf${intervalName}`],
-      [`makeInterval`, [`add${intervalName}s`, 1]],
-    ]
-  }
-}
-
-export class RelativeSecondNode extends RelativeIntervalNode {
-  get intervalName(): 'Second' {
-    return 'Second'
-  }
-}
-export class RelativeMinuteNode extends RelativeIntervalNode {
-  get intervalName(): 'Minute' {
-    return 'Minute'
-  }
-}
-export class RelativeHourNode extends RelativeIntervalNode {
-  get intervalName(): 'Hour' {
-    return 'Hour'
-  }
-}
-export class RelativeWeekNode extends RelativeIntervalNode {
-  get intervalName(): 'Week' {
-    return 'Week'
-  }
-}
-export class RelativeMonthNode extends RelativeIntervalNode {
-  get intervalName(): 'Month' {
-    return 'Month'
-  }
-}
-export class RelativeYearNode extends RelativeIntervalNode {
-  get intervalName(): 'Year' {
-    return 'Year'
-  }
-}
-
-const RelativeIntervalNodes = {
-  Second: RelativeSecondNode,
-  Minute: RelativeMinuteNode,
-  Hour: RelativeHourNode,
-  Week: RelativeWeekNode,
-  Month: RelativeMonthNode,
-  Year: RelativeYearNode,
-}
-
-const RelativeIntervalBase = (intervalName: RelativeIntervalType) =>
-  oneOf(
-    named(`This${intervalName}`, new RegExp(`this\\s+${intervalName}`, 'i')),
-    named(`Last${intervalName}`, new RegExp(`last\\s+${intervalName}`, 'i')),
-    named(`Next${intervalName}`, new RegExp(`next\\s+${intervalName}`, 'i')),
-    named(
-      `${intervalName}BeforeLast`,
-      new RegExp(`(the\\s+)?${intervalName}\\s+before\\s+last`, 'i')
-    ),
-    named(
-      `${intervalName}AfterNext`,
-      new RegExp(`(the\\s+)?${intervalName}\\s+after\\s+next`, 'i')
-    )
-  )
-
-const RelativeInterval = (intervalName: Exclude<RelativeIntervalType, 'Day'>) =>
-  named(`Relative${intervalName}`, RelativeIntervalBase(intervalName)).parseAs(
-    RelativeIntervalNodes[intervalName]
-  )
-
-export const RelativeSecond = RelativeInterval('Second')
-export const RelativeMinute = RelativeInterval('Minute')
-export const RelativeHour = RelativeInterval('Hour')
-export const RelativeWeek = RelativeInterval('Week')
-export const RelativeMonth = RelativeInterval('Month')
-export const RelativeYear = RelativeInterval('Year')
-
 export abstract class RangeEndRelativeIntervalNode extends RelativeIntervalNode {
   dateFns(): DateFn[] {
     return [['now'], ...super.dateFns()]
@@ -1344,7 +1414,6 @@ export const DateTime = named(
     RelativeMonthName,
     MonthName,
     RelativeMonth,
-    RelativeYear,
     DateTimeOffsetInterval,
     group(
       oneOf(DateTimeOffset, SpecificDay),
@@ -1365,7 +1434,6 @@ export const RangeEndDateTime = named(
     RangeEndRelativeHour,
     RangeEndRelativeWeek,
     RangeEndRelativeMonth,
-    RangeEndRelativeYear,
     RangeEndDateTimeOffsetInterval,
     group(
       oneOf(RangeEndDateTimeOffset, RangeEndSpecificDay),

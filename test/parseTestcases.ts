@@ -848,6 +848,7 @@ export const parseTestcases: Record<
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
+  'last year may 26': { ref: 'may 26 last year' },
   'may 26 this year': [
     ['setMonth', 4],
     ['setDate', 26],
@@ -861,6 +862,23 @@ export const parseTestcases: Record<
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
+  'may 26 the year after next': [
+    ['addYears', 2],
+    ['setMonth', 4],
+    ['setDate', 26],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  'may 26 next year at 3pm': [
+    ['addYears', 1],
+    ['setMonth', 4],
+    ['setDate', 26],
+    ['setHours', 15],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
+  '3pm may 26 next year': { ref: 'may 26 next year at 3pm' },
+  '3pm on may 26 next year': { ref: 'may 26 next year at 3pm' },
   sunday: [
     ['setDay', 0],
     [
@@ -1023,7 +1041,22 @@ export const parseTestcases: Record<
     ['addYears', 1],
     ['makeInterval', ['addMonths', 1]],
   ],
-  'next jun 1': [],
-  'next jun 1st': [],
-  'next jun 1st at 8pm': [],
+  'next jun 1': [
+    ['setMonth', 5],
+    ['startOfMonth'],
+    ['if', { beforeNow: [['addYears', 1]] }],
+    ['setDate', 1],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  'next jun 1st': { ref: 'next jun 1' },
+  'next jun 1st at 8pm': [
+    ['setMonth', 5],
+    ['startOfMonth'],
+    ['if', { beforeNow: [['addYears', 1]] }],
+    ['setDate', 1],
+    ['setHours', 20],
+    ['startOfHour'],
+    ['makeInterval', ['addHours', 1]],
+  ],
 }
