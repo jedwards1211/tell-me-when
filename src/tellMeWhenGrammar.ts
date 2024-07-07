@@ -763,17 +763,6 @@ export class TimeNode extends ParseNode {
                 ? 'startOfMinute'
                 : 'startOfHour',
             ],
-            [
-              'makeInterval',
-              [
-                seconds != undefined
-                  ? 'addSeconds'
-                  : minutes != undefined
-                  ? 'addMinutes'
-                  : 'addHours',
-                1,
-              ],
-            ],
           ] as DateFn[])),
     ]
   }
