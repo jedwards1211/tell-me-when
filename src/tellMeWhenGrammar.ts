@@ -1443,11 +1443,29 @@ export const RangeEndDateTime = named(
 
 export class RangeNode extends ParseNode {
   dateFns(input: string): DateFn[] {
-    const start = this.find('RangeStart')?.find(DateTimeNode)?.dateFns(input)
-    if (!start) throw new Error('unexpected')
+    const RangeStart = this.find('RangeStart')?.find(DateTimeNode)
+    if (!RangeStart) throw new Error('unexpected')
+    let start = RangeStart.dateFns(input)
     const RangeEnd = this.find('RangeEnd')?.find(DateTimeNode)
     if (!RangeEnd) throw new Error('unexpected')
-    const end = RangeEnd.dateFns(input)
+    let end = RangeEnd.dateFns(input)
+
+    if (
+      !start.some((f) => f[0] === 'setYear' || f[0] === 'addYears') &&
+      end.some((f) => f[0] === 'setYear' || f[0] === 'addYears')
+    ) {
+      start = [
+        ...end.filter(
+          (f) =>
+            f[0] === 'setYear' || f[0] === 'addYears' || f[0] === 'startOfYear'
+        ),
+        ...start.filter((f) => f[0] !== 'closestToNow'),
+      ]
+      end = end.filter(
+        (f) =>
+          f[0] !== 'setYear' && f[0] !== 'addYears' && f[0] !== 'startOfYear'
+      )
+    }
 
     const through = this.find('Through') != null
 
@@ -1474,9 +1492,10 @@ export const Range = named(
   group(
     group('from', space).maybe(),
     named('RangeStart', DateTime),
-    space,
-    oneOf('to', named('Through', 'through'), 'until', '-'),
-    space,
+    oneOf(
+      group(space, oneOf('to', named('Through', 'through'), 'until'), space),
+      /\s*-\s*/
+    ),
     named('RangeEnd', RangeEndDateTime)
   )
 ).parseAs(RangeNode)

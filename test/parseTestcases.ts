@@ -1025,4 +1025,23 @@ export const parseTestcases: Record<
     ['setHours', 20],
     ['startOfHour'],
   ],
+  'jun-aug last year': [
+    ['addYears', -1],
+    ['setMonth', 5],
+    ['startOfMonth'],
+    ['makeInterval', ['setMonth', 7], ['startOfMonth']],
+  ],
+  'jun-aug 2021': [
+    ['setYear', 2021],
+    ['setMonth', 5],
+    ['startOfMonth'],
+    ['makeInterval', ['setMonth', 7], ['startOfMonth']],
+  ],
+  'jun 1-aug 3 last year': [
+    ['addYears', -1],
+    ['setMonth', 5],
+    ['setDate', 1],
+    ['startOfDay'],
+    ['makeInterval', ['setMonth', 7], ['setDate', 3], ['startOfDay']],
+  ],
 }
