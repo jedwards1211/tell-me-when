@@ -3,6 +3,7 @@ import { parse } from './parse'
 
 export { parse } from './parse'
 export { applyDateFns } from './applyDateFns'
+export type { DateFn } from './DateFn'
 
 export function tellMeWhen(
   when: string,

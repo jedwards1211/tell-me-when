@@ -1,7 +1,13 @@
 import { ParseError } from './ParseError'
 import { tellMeWhen } from './index'
 
-const expr = process.argv.slice(2).join(' ')
+const expr = process.argv
+  .slice(2)
+  .filter((a) => !a.startsWith('--'))
+  .join(' ')
+
+const iso = process.argv.includes('--iso')
+
 let result: Date | [Date, Date]
 try {
   result = tellMeWhen(expr)
@@ -19,9 +25,13 @@ try {
   process.exit(1)
 }
 
+const formatDate = iso
+  ? (d: Date) => d.toISOString()
+  : (d: Date) => d.toLocaleString()
+
 // eslint-disable-next-line no-console
 console.log(
   Array.isArray(result)
-    ? result.map((d) => d.toLocaleString()).join(' to ')
-    : result.toLocaleString()
+    ? result.map(formatDate).join(' to ')
+    : formatDate(result)
 )

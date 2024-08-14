@@ -8,7 +8,209 @@ human relative date and time parser
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![npm version](https://badge.fury.io/js/tell-me-when.svg)](https://badge.fury.io/js/tell-me-when)
 
-## Example Supported Expressions
+# Table of Contents
+
+<!-- tocstart -->
+
+- [tell-me-when](#tell-me-when)
+- [Table of Contents](#table-of-contents)
+- [Usage](#usage)
+  - [Install](#install)
+  - [CLI Example](#cli-example)
+  - [API Example](#api-example)
+- [API](#api)
+  - [`tellMeWhen(expr: string, options?: { now?: Date }): Date | [Date, Date]`](#tellmewhenexpr-string-options--now-date--date--date-date)
+  - [`parse(expr: string): DateFn[]`](#parseexpr-string-datefn)
+  - [`type DateFn`](#type-datefn)
+  - [`class ParseError extends Error`](#class-parseerror-extends-error)
+    - [`from: number`](#from-number)
+    - [`to: number`](#to-number)
+- [Example Supported Expressions](#example-supported-expressions)
+
+<!-- tocstop -->
+
+# Usage
+
+## Install
+
+```sh
+npm i tell-me-when
+# or
+pnpm i tell-me-when
+```
+
+## CLI Example
+
+```
+> tell-me-when 1 hour ago
+8/14/2024, 11:09:27 AM
+> tell-me-when --iso 1 hour ago
+2024-08-14T16:09:27.000Z
+```
+
+## API Example
+
+```ts
+import { tellMeWhen } from 'tell-me-when'
+
+console.log(
+  tellMeWhen('1 hour ago', {
+    now: new Date('Aug 14, 2024 12:09:27 AM'),
+  }).toLocaleString('en-US')
+)
+// 8/14/2024, 11:09:27 AM
+```
+
+# API
+
+## `tellMeWhen(expr: string, options?: { now?: Date }): Date | [Date, Date]`
+
+Parses `expr` as a date or date range or throws a [`ParseError`](#class-parseerror-extends-error).
+
+## `parse(expr: string): DateFn[]`
+
+Parses the given expression into the raw [`DateFn`](#type-datefn) operations to perform to resolve the date or date range.
+
+## `type DateFn`
+
+A `DateFn` describes an operation to apply to an input date. [`parse`](#parseexpr-string-datefn) returns a series of `DateFn`
+operations to apply, starting with the current date/time. This way, you can write a custom function to operate on dates from third
+party libraries like `moment` or `luxon`.
+
+Most operations output a date for the next operation in the series, but the series can end with a `makeInterval` operation, which
+takes an input date and another list of operations, computes the result of applying those operations to the input date, and outputs
+a range from the input date to the result of the operations, as a 2-element array.
+
+```ts
+export type DateFn =
+  /**
+   * Set Date to now
+   */
+  | ['now']
+  /**
+   * Set year of date to the given value
+   */
+  | ['setYear', number]
+  /**
+   * Set month of date to the given value (0-11)
+   */
+  | ['setMonth', number]
+  /**
+   * Set day of month of date to the given value (1-31)
+   */
+  | ['setDate', number]
+  /**
+   * Set day of week of date to the given value
+   */
+  | ['setDay', number]
+  /**
+   * Set hour of date to the given value
+   */
+  | ['setHours', number]
+  /**
+   * Set minutes of date to the given value
+   */
+  | ['setMinutes', number]
+  /**
+   * Set seconds of date to the given value
+   */
+  | ['setSeconds', number]
+  /**
+   * Set milliseconds of date to the given value
+   */
+  | ['setMilliseconds', number]
+  | AddFn
+  /**
+   * Set date to the start of its current year
+   */
+  | ['startOfYear']
+  /**
+   * Set date to the start of its current month
+   */
+  | ['startOfMonth']
+  /**
+   * Set date to the start of its current week
+   */
+  | ['startOfWeek']
+  /**
+   * Set date to the start of its current day
+   */
+  | ['startOfDay']
+  /**
+   * Set date to the start of its current hour
+   */
+  | ['startOfHour']
+  /**
+   * Set date to the start of its current minute
+   */
+  | ['startOfMinute']
+  /**
+   * Set date to the start of its current second
+   */
+  | ['startOfSecond']
+  /**
+   * Make an interval from the current date to the result of
+   * applying the given DateFns to it
+   */
+  | ['makeInterval', ...DateFn[]]
+  /**
+   * If the current date is before now, apply beforeNow DateFns;
+   * if it is after now, apply afterNow DateFns
+   */
+  | ['if', { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
+  /**
+   * Select whichever is closer to now: the result of applying
+   * `a` DateFns to the current date, or the result of applying
+   * `b` DateFns to the current date
+   */
+  | ['closestToNow', a: DateFn[], b: DateFn[]]
+
+export type AddFn =
+  /**
+   * Add the given number of years to the date
+   */
+  | ['addYears', number]
+  /**
+   * Add the given number of months to the date
+   */
+  | ['addMonths', number]
+  /**
+   * Add the given number of weeks to the date
+   */
+  | ['addWeeks', number]
+  /**
+   * Add the given number of days to the date
+   */
+  | ['addDays', number]
+  /**
+   * Add the given number of hours to the date
+   */
+  | ['addHours', number]
+  /**
+   * Add the given number of minutes to the date
+   */
+  | ['addMinutes', number]
+  /**
+   * Add the given number of seconds to the date
+   */
+  | ['addSeconds', number]
+  /**
+   * Add the given number of milliseconds to the date
+   */
+  | ['addMilliseconds', number]
+```
+
+## `class ParseError extends Error`
+
+### `from: number`
+
+The start of the range in the input expression where the parse error occured
+
+### `to: number`
+
+The end of the range in the input expression where the parse error occured
+
+# Example Supported Expressions
 
 This is list is compiled from testcases:
 
