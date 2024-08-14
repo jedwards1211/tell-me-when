@@ -44,7 +44,7 @@ export function applyDateFns(
         d.setMonth(0)
       // eslint-disable-next-line no-fallthrough
       case 'startOfMonth':
-        d.setDate(0)
+        d.setDate(1)
       // eslint-disable-next-line no-fallthrough
       case 'startOfDay':
         d.setHours(0)
