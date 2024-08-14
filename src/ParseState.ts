@@ -1,8 +1,8 @@
 export class ParseState {
   index = 0
-  start: number
-  end: number
-  flags: string
+  readonly start: number
+  readonly end: number
+  readonly flags: string
 
   constructor(
     public input: string,

@@ -1,5 +1,8 @@
 {
   "extends": "./node_modules/@jcoreio/toolchain-typescript/tsconfig.json",
-  "include": ["./src", "./test"],
-  "exclude": ["node_modules"]
+  "include": ["./src", "./test", "./scripts"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "lib": ["ES2021"]
+  }
 }

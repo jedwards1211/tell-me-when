@@ -1,7 +1,7 @@
 import { AddFn, DateFn } from './DateFn'
 import { GrammarNode } from './GrammarNode'
 import { ParseNode } from './ParseNode'
-const { token, group, named, oneOf, longestOf } = GrammarNode
+const { token, group, named, oneOf, longestOf, negativeLookahead } = GrammarNode
 
 const space = token(/\s+/)
 
@@ -37,6 +37,15 @@ export class TwoDigitYearNode extends ParseNode {
 const TwoDigitYear = token(/'?\d\d/).parseAs(TwoDigitYearNode)
 
 const YearNum = FullYear.or(TwoDigitYear)
+
+const YearNumNotHour = oneOf(
+  FullYear,
+  token(/'\d\d/).parseAs(TwoDigitYearNode),
+  group(
+    token(/\d\d/).parseAs(TwoDigitYearNode),
+    negativeLookahead(/:|\s*[ap](m|\s)/i)
+  )
+)
 
 export class MonthNumNode extends ParseNode {
   constructor(public wrapped: ParseNode) {
@@ -518,7 +527,7 @@ const Date = named(
           DayOfMonth,
           group(
             space.or(group(space.maybe(), ',', space.maybe())),
-            oneOf(YearNum, RelativeYear)
+            oneOf(YearNumNotHour, RelativeYear)
           ).maybe()
         ),
         group(
@@ -532,7 +541,7 @@ const Date = named(
       MonthNameNoDot,
       oneOf(
         group('.', DayOfMonth, group('.', YearNum).maybe()),
-        group(NthDayOfMonth, YearNum.maybe()),
+        group(NthDayOfMonth, YearNumNotHour.maybe()),
         DayOfMonth,
         group('-', DayOfMonth, group('-', YearNum).maybe()),
         group('_', DayOfMonth, group('_', YearNum).maybe()),
@@ -543,19 +552,19 @@ const Date = named(
       MonthNum,
       longestOf(
         group(/[- ._/]/, FullYear),
-        group(NthDayOfMonth, YearNum.maybe()),
+        group(NthDayOfMonth, YearNumNotHour.maybe()),
         group('.', DayOfMonth, group('.', YearNum).maybe()),
         group('-', DayOfMonth, group('-', YearNum).maybe()),
         group('_', DayOfMonth, group('_', YearNum).maybe()),
         group('/', DayOfMonth, group('/', YearNum).maybe()),
-        group(space, DayOfMonth, group(space, YearNum).maybe())
+        group(space, DayOfMonth, group(space, YearNumNotHour).maybe())
       )
     ),
     group(
       group('the', space).maybe(),
       NthDayOfMonth,
       oneOf(
-        group(MonthNameNoDot, YearNum.maybe()),
+        group(MonthNameNoDot, YearNumNotHour.maybe()),
         group('.', MonthNoDot, group('.', YearNum).maybe()),
         group('-', MonthNoDot, group('-', YearNum).maybe()),
         group('_', MonthNoDot, group('_', YearNum).maybe()),
@@ -566,7 +575,7 @@ const Date = named(
           MonthName,
           group(
             space.or(group(space.maybe(), ',', space.maybe())),
-            oneOf(YearNum, RelativeYear)
+            oneOf(YearNumNotHour, RelativeYear)
           ).maybe()
         )
       ).maybe()
@@ -574,13 +583,13 @@ const Date = named(
     group(
       DayOfMonthNum,
       oneOf(
-        group(MonthNameNoDot, YearNum.maybe()),
+        group(MonthNameNoDot, YearNumNotHour.maybe()),
         group('.', MonthNoDot, group('.', YearNum).maybe()),
         group('-', MonthNoDot, group('-', YearNum).maybe()),
         group('_', MonthNoDot, group('_', YearNum).maybe()),
         group('/', MonthNoDot, group('/', YearNum).maybe()),
         group(space, MonthName, group(space, RelativeYear).maybe()),
-        group(space, Month, group(space, YearNum).maybe())
+        group(space, Month, group(space, YearNumNotHour).maybe())
       )
     )
   )
@@ -608,7 +617,7 @@ const DayDate = named(
         DayOfMonth,
         group(
           space.or(group(space.maybe(), ',', space.maybe())),
-          oneOf(YearNum, RelativeYear)
+          oneOf(YearNumNotHour, RelativeYear)
         ).maybe()
       )
     ),
@@ -617,7 +626,7 @@ const DayDate = named(
       MonthNameNoDot,
       oneOf(
         group('.', DayOfMonth, group('.', YearNum).maybe()),
-        group(NthDayOfMonth, YearNum.maybe()),
+        group(NthDayOfMonth, YearNumNotHour.maybe()),
         DayOfMonth,
         group('-', DayOfMonth, group('-', YearNum).maybe()),
         group('_', DayOfMonth, group('_', YearNum).maybe()),
@@ -627,7 +636,7 @@ const DayDate = named(
     group(
       MonthNum,
       oneOf(
-        group(NthDayOfMonth, YearNum.maybe()),
+        group(NthDayOfMonth, YearNumNotHour.maybe()),
         group('.', DayOfMonth, group('.', YearNum).maybe()),
         group('-', DayOfMonth, group('-', YearNum).maybe()),
         group('_', DayOfMonth, group('_', YearNum).maybe()),
@@ -635,7 +644,7 @@ const DayDate = named(
         group(
           space,
           DayOfMonth,
-          group(space, oneOf(YearNum, RelativeYear)).maybe()
+          group(space, oneOf(YearNumNotHour, RelativeYear)).maybe()
         )
       )
     ),
@@ -643,7 +652,7 @@ const DayDate = named(
       group('the', space).maybe(),
       NthDayOfMonth,
       oneOf(
-        group(MonthNameNoDot, YearNum.maybe()),
+        group(MonthNameNoDot, YearNumNotHour.maybe()),
         group('.', MonthNoDot, group('.', YearNum).maybe()),
         group('-', MonthNoDot, group('-', YearNum).maybe()),
         group('_', MonthNoDot, group('_', YearNum).maybe()),
@@ -654,7 +663,7 @@ const DayDate = named(
           MonthName,
           group(
             space.or(group(space.maybe(), ',', space.maybe())),
-            oneOf(YearNum, RelativeYear)
+            oneOf(YearNumNotHour, RelativeYear)
           ).maybe()
         )
       ).maybe()
@@ -662,12 +671,16 @@ const DayDate = named(
     group(
       DayOfMonthNum,
       oneOf(
-        group(MonthNameNoDot, YearNum.maybe()),
+        group(MonthNameNoDot, YearNumNotHour.maybe()),
         group('.', MonthNoDot, group('.', YearNum).maybe()),
         group('-', MonthNoDot, group('-', YearNum).maybe()),
         group('_', MonthNoDot, group('_', YearNum).maybe()),
         group('/', MonthNoDot, group('/', YearNum).maybe()),
-        group(space, Month, group(space, oneOf(YearNum, RelativeYear)).maybe())
+        group(
+          space,
+          Month,
+          group(space, oneOf(YearNumNotHour, RelativeYear)).maybe()
+        )
       )
     )
   )
@@ -742,11 +755,12 @@ export class TimeNode extends ParseNode {
     const milliseconds = this.milliseconds(input)
     const amPm = this.amPm(input)
 
-    if (hours != null && amPm) {
+    if (hours != null && amPm != null) {
       if (hours < 0 || hours > 12) {
         throw new Error('hour out of range')
       }
       if (amPm === AmPmValue.PM && hours !== 12) hours += 12
+      else if (amPm === AmPmValue.AM && hours === 12) hours = 0
     }
 
     return [

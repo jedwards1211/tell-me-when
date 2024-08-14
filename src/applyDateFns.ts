@@ -104,6 +104,11 @@ export function applyDateFns(
         if (Array.isArray(end)) {
           throw new Error(`can't use makeInterval inside makeInterval`)
         }
+        if (end < d) {
+          throw new Error(
+            'expression seems invalid, produced an end date before the start date'
+          )
+        }
         return [d, end]
       }
     }

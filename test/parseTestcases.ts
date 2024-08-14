@@ -375,7 +375,6 @@ export const parseTestcases: Record<
   '1st_aug_20': { ref: 'aug 1 2020' },
   '1st/aug/2020': { ref: 'aug 1 2020' },
   '1st/aug/20': { ref: 'aug 1 2020' },
-
   'aug 6 1am': [
     ['setMonth', 7],
     ['setDate', 6],
@@ -385,6 +384,40 @@ export const parseTestcases: Record<
       [['if', { beforeNow: [['addYears', 1]] }]],
     ],
     ['setHours', 1],
+    ['startOfHour'],
+  ],
+  'aug 6 13:00': [
+    ['setMonth', 7],
+    ['setDate', 6],
+    [
+      'closestToNow',
+      [['if', { afterNow: [['addYears', -1]] }]],
+      [['if', { beforeNow: [['addYears', 1]] }]],
+    ],
+    ['setHours', 13],
+    ['setMinutes', 0],
+    ['startOfMinute'],
+  ],
+  'aug 6 12am': [
+    ['setMonth', 7],
+    ['setDate', 6],
+    [
+      'closestToNow',
+      [['if', { afterNow: [['addYears', -1]] }]],
+      [['if', { beforeNow: [['addYears', 1]] }]],
+    ],
+    ['setHours', 0],
+    ['startOfHour'],
+  ],
+  'aug 6 12 am': { ref: 'aug 6 12am' },
+  '6 aug 12 am': { ref: 'aug 6 12am' },
+  '12 am aug 6': { ref: 'aug 6 12am' },
+  '12am aug 6': { ref: 'aug 6 12am' },
+  "aug 6 '12 12am": [
+    ['setYear', 2012],
+    ['setMonth', 7],
+    ['setDate', 6],
+    ['setHours', 0],
     ['startOfHour'],
   ],
   'aug 6 at 1am': { ref: 'aug 6 1am' },
@@ -770,6 +803,9 @@ export const parseTestcases: Record<
     ['startOfHour'],
     ['makeInterval', ['addHours', 2]],
   ],
+  'yesterday 4pm to 2h later': {
+    ref: 'yesterday at 4pm to two hours later',
+  },
   'yesterday at 4pm to two hours after that': {
     ref: 'yesterday at 4pm to two hours later',
   },
@@ -1045,3 +1081,7 @@ export const parseTestcases: Record<
     ['makeInterval', ['setMonth', 7], ['setDate', 3], ['startOfDay']],
   ],
 }
+
+export const supportedValues = Object.keys(parseTestcases)
+  .filter((value) => parseTestcases[value] !== 'error')
+  .sort()

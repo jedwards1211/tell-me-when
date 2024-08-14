@@ -90,6 +90,16 @@ export abstract class GrammarNode {
   ) {
     return new GroupNode(name, ...sequence.map(GrammarNode.toGrammarNode))
   }
+
+  static negativeLookahead(
+    ...sequence: (string | RegExp | GrammarNode | (() => GrammarNode))[]
+  ) {
+    return new NegativeLookaheadNode(
+      sequence.length === 1
+        ? GrammarNode.toGrammarNode(sequence[0])
+        : GrammarNode.group(...sequence)
+    )
+  }
 }
 
 export class GrammarNodeRef extends GrammarNode {
@@ -218,6 +228,20 @@ export class GroupNode extends GrammarNode {
       if (!parsed.isEmpty) children.push(parsed)
     }
     return new ParseNode(this.name, startIndex, state.index, children)
+  }
+}
+
+export class NegativeLookaheadNode extends GrammarNode {
+  constructor(public node: GrammarNode) {
+    super()
+  }
+
+  parse(state: ParseState): ParseNode {
+    const { index } = state
+    const parsed = this.node.parse(state)
+    if (!parsed.isError) return ParseNode.error(index)
+    state.index = index
+    return ParseNode.empty(index)
   }
 }
 
