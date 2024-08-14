@@ -836,12 +836,14 @@ export const parseTestcases: Record<
     ['makeInterval', ['now']],
   ],
   'the last three months': { ref: 'the past 3 months' },
+  'last three months': { ref: 'the past 3 months' },
   'the past 3 months and 2 days': [
     ['addMonths', -3],
     ['addDays', -2],
     ['makeInterval', ['now']],
   ],
   'the next 3 months': [['makeInterval', ['addMonths', 3]]],
+  'next 3 months': { ref: 'the next 3 months' },
   'the coming three months': { ref: 'the next 3 months' },
   'the next 3 months and 2 days': [
     ['makeInterval', ['addMonths', 3], ['addDays', 2]],

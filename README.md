@@ -51,13 +51,13 @@ pnpm i tell-me-when
 ## API Example
 
 ```ts
-import { tellMeWhen } from 'tell-me-when'
+import { tellMeWhen } from "tell-me-when";
 
 console.log(
-  tellMeWhen('1 hour ago', {
-    now: new Date('Aug 14, 2024 12:09:27 AM'),
-  }).toLocaleString('en-US')
-)
+  tellMeWhen("1 hour ago", {
+    now: new Date("Aug 14, 2024 12:09:27 AM"),
+  }).toLocaleString("en-US")
+);
 // 8/14/2024, 11:09:27 AM
 ```
 
@@ -86,118 +86,118 @@ export type DateFn =
   /**
    * Set Date to now
    */
-  | ['now']
+  | ["now"]
   /**
    * Set year of date to the given value
    */
-  | ['setYear', number]
+  | ["setYear", number]
   /**
    * Set month of date to the given value (0-11)
    */
-  | ['setMonth', number]
+  | ["setMonth", number]
   /**
    * Set day of month of date to the given value (1-31)
    */
-  | ['setDate', number]
+  | ["setDate", number]
   /**
    * Set day of week of date to the given value
    */
-  | ['setDay', number]
+  | ["setDay", number]
   /**
    * Set hour of date to the given value
    */
-  | ['setHours', number]
+  | ["setHours", number]
   /**
    * Set minutes of date to the given value
    */
-  | ['setMinutes', number]
+  | ["setMinutes", number]
   /**
    * Set seconds of date to the given value
    */
-  | ['setSeconds', number]
+  | ["setSeconds", number]
   /**
    * Set milliseconds of date to the given value
    */
-  | ['setMilliseconds', number]
+  | ["setMilliseconds", number]
   | AddFn
   /**
    * Set date to the start of its current year
    */
-  | ['startOfYear']
+  | ["startOfYear"]
   /**
    * Set date to the start of its current month
    */
-  | ['startOfMonth']
+  | ["startOfMonth"]
   /**
    * Set date to the start of its current week
    */
-  | ['startOfWeek']
+  | ["startOfWeek"]
   /**
    * Set date to the start of its current day
    */
-  | ['startOfDay']
+  | ["startOfDay"]
   /**
    * Set date to the start of its current hour
    */
-  | ['startOfHour']
+  | ["startOfHour"]
   /**
    * Set date to the start of its current minute
    */
-  | ['startOfMinute']
+  | ["startOfMinute"]
   /**
    * Set date to the start of its current second
    */
-  | ['startOfSecond']
+  | ["startOfSecond"]
   /**
    * Make an interval from the current date to the result of
    * applying the given DateFns to it
    */
-  | ['makeInterval', ...DateFn[]]
+  | ["makeInterval", ...DateFn[]]
   /**
    * If the current date is before now, apply beforeNow DateFns;
    * if it is after now, apply afterNow DateFns
    */
-  | ['if', { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
+  | ["if", { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
   /**
    * Select whichever is closer to now: the result of applying
    * `a` DateFns to the current date, or the result of applying
    * `b` DateFns to the current date
    */
-  | ['closestToNow', a: DateFn[], b: DateFn[]]
+  | ["closestToNow", a: DateFn[], b: DateFn[]];
 
 export type AddFn =
   /**
    * Add the given number of years to the date
    */
-  | ['addYears', number]
+  | ["addYears", number]
   /**
    * Add the given number of months to the date
    */
-  | ['addMonths', number]
+  | ["addMonths", number]
   /**
    * Add the given number of weeks to the date
    */
-  | ['addWeeks', number]
+  | ["addWeeks", number]
   /**
    * Add the given number of days to the date
    */
-  | ['addDays', number]
+  | ["addDays", number]
   /**
    * Add the given number of hours to the date
    */
-  | ['addHours', number]
+  | ["addHours", number]
   /**
    * Add the given number of minutes to the date
    */
-  | ['addMinutes', number]
+  | ["addMinutes", number]
   /**
    * Add the given number of seconds to the date
    */
-  | ['addSeconds', number]
+  | ["addSeconds", number]
   /**
    * Add the given number of milliseconds to the date
    */
-  | ['addMilliseconds', number]
+  | ["addMilliseconds", number];
 ```
 
 ## `class ParseError extends Error`
@@ -218,7 +218,7 @@ This is list is compiled from testcases:
 
 | Expression                                        | Interpretation for now = Jan 01, 2024, 12:00:00.000 AM          |
 | ------------------------------------------------- | --------------------------------------------------------------- |
-| `	2021`                                            | `Dec 31, 2020, 12:00:00.000 AM - Dec 31, 2021, 12:00:00.000 AM` |
+| `	2021`                                            | `Jan 01, 2021, 12:00:00.000 AM - Jan 01, 2022, 12:00:00.000 AM` |
 | `01 aug`                                          | `Aug 01, 2024, 12:00:00.000 AM - Aug 02, 2024, 12:00:00.000 AM` |
 | `01 aug '20`                                      | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `01 aug 20`                                       | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
@@ -344,60 +344,60 @@ This is list is compiled from testcases:
 | `1st_aug_2020`                                    | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `2 months ago`                                    | `Nov 01, 2023, 12:00:00.000 AM`                                 |
 | `2 months from now`                               | `Mar 01, 2024, 12:00:00.000 AM`                                 |
-| `2021`                                            | `Dec 31, 2020, 12:00:00.000 AM - Dec 31, 2021, 12:00:00.000 AM` |
-| `2021  AUG.`                                      | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
-| `2021 08`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021`                                            | `Jan 01, 2021, 12:00:00.000 AM - Jan 01, 2022, 12:00:00.000 AM` |
+| `2021  AUG.`                                      | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
+| `2021 08`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021 08 06`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021 8`                                          | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021 8`                                          | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021 8 6`                                        | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021 AUG.`                                       | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
-| `2021 aug`                                        | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021 AUG.`                                       | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
+| `2021 aug`                                        | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021 aug 06`                                     | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021 aug 6`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021 aug 6th`                                    | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021 aug.`                                       | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021 aug.`                                       | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021 aug. 06`                                    | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021 aug. 6`                                     | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021 aug. 6th`                                   | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021-08`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021-08`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021-08-06`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021-8`                                          | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021-8`                                          | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021-8-6`                                        | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021-aug`                                        | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021-aug`                                        | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021-aug-06`                                     | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021-aug-6`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021-aug-6th`                                    | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021.08`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021.08`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021.08.06`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021.8`                                          | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021.8`                                          | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021.8.6`                                        | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021.aug`                                        | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021.aug`                                        | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021.aug.06`                                     | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021.aug.6`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021.aug.6th`                                    | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021/08`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021/08`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021/08/06`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021/8`                                          | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021/8`                                          | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021/8/6`                                        | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021/aug`                                        | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021/aug`                                        | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021/aug/06`                                     | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021/aug/6`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021/aug/6th`                                    | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021AUG`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
-| `2021Aug`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
-| `2021_08`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021AUG`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
+| `2021Aug`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
+| `2021_08`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021_08_06`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021_8`                                          | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021_8`                                          | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021_8_6`                                        | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021_aug`                                        | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021_aug`                                        | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021_aug_06`                                     | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021_aug_6`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021_aug_6th`                                    | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021aug`                                         | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021aug`                                         | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2021aug06`                                       | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021aug6`                                        | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
 | `2021aug6th`                                      | `Aug 06, 2021, 12:00:00.000 AM - Aug 07, 2021, 12:00:00.000 AM` |
-| `2021august`                                      | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `2021august`                                      | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `2nd`                                             | `Jan 02, 2024, 12:00:00.000 AM - Jan 03, 2024, 12:00:00.000 AM` |
 | `3 day 2 hr 1 min ago`                            | `Dec 28, 2023, 09:59:00.000 PM`                                 |
 | `3 day 2 hr 1 min before now`                     | `Dec 28, 2023, 09:59:00.000 PM`                                 |
@@ -422,7 +422,7 @@ This is list is compiled from testcases:
 | `a month ago`                                     | `Dec 01, 2023, 12:00:00.000 AM`                                 |
 | `a week ago`                                      | `Dec 25, 2023, 12:00:00.000 AM`                                 |
 | `an hour ago`                                     | `Dec 31, 2023, 11:00:00.000 PM`                                 |
-| `aug`                                             | `Jul 31, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `aug`                                             | `Aug 01, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `aug 01`                                          | `Aug 01, 2024, 12:00:00.000 AM - Aug 02, 2024, 12:00:00.000 AM` |
 | `aug 01 '20`                                      | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `aug 01 20`                                       | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
@@ -441,7 +441,7 @@ This is list is compiled from testcases:
 | `aug 1st, '20`                                    | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `aug 1st, 20`                                     | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `aug 1st, 2020`                                   | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
-| `aug 2021`                                        | `Jul 31, 2021, 12:00:00.000 AM - Aug 31, 2021, 12:00:00.000 AM` |
+| `aug 2021`                                        | `Aug 01, 2021, 12:00:00.000 AM - Sep 01, 2021, 12:00:00.000 AM` |
 | `aug 2nd`                                         | `Aug 02, 2024, 12:00:00.000 AM - Aug 03, 2024, 12:00:00.000 AM` |
 | `aug 3rd`                                         | `Aug 03, 2024, 12:00:00.000 AM - Aug 04, 2024, 12:00:00.000 AM` |
 | `aug 4th`                                         | `Aug 04, 2024, 12:00:00.000 AM - Aug 05, 2024, 12:00:00.000 AM` |
@@ -464,15 +464,15 @@ This is list is compiled from testcases:
 | `aug 6 at 1:23`                                   | `Aug 06, 2024, 01:23:00.000 AM`                                 |
 | `aug 6 at 1:23am`                                 | `Aug 06, 2024, 01:23:00.000 AM`                                 |
 | `aug 6 at 1am`                                    | `Aug 06, 2024, 01:00:00.000 AM`                                 |
-| `aug 9 - sep`                                     | `Aug 09, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `aug 9 - sep`                                     | `Aug 09, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `aug 9 - sep 8`                                   | `Aug 09, 2024, 12:00:00.000 AM - Sep 08, 2024, 12:00:00.000 AM` |
 | `aug 9 3pm to sep 13 at 8:25`                     | `Aug 09, 2024, 03:00:00.000 PM - Sep 13, 2024, 08:25:00.000 AM` |
 | `aug 9 through sep`                               | `Aug 09, 2024, 12:00:00.000 AM - Oct 01, 2024, 12:00:00.000 AM` |
 | `aug 9 through sep 8`                             | `Aug 09, 2024, 12:00:00.000 AM - Sep 09, 2024, 12:00:00.000 AM` |
-| `aug 9 to sep`                                    | `Aug 09, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `aug 9 to sep`                                    | `Aug 09, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `aug 9 to sep 13 at 8:25`                         | `Aug 09, 2024, 12:00:00.000 AM - Sep 13, 2024, 08:25:00.000 AM` |
 | `aug 9 to sep 8`                                  | `Aug 09, 2024, 12:00:00.000 AM - Sep 08, 2024, 12:00:00.000 AM` |
-| `aug 9 until sep`                                 | `Aug 09, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `aug 9 until sep`                                 | `Aug 09, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `aug 9 until sep 8`                               | `Aug 09, 2024, 12:00:00.000 AM - Sep 08, 2024, 12:00:00.000 AM` |
 | `aug-01`                                          | `Aug 01, 2024, 12:00:00.000 AM - Aug 02, 2024, 12:00:00.000 AM` |
 | `aug-01-20`                                       | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
@@ -485,7 +485,7 @@ This is list is compiled from testcases:
 | `aug-2nd`                                         | `Aug 02, 2024, 12:00:00.000 AM - Aug 03, 2024, 12:00:00.000 AM` |
 | `aug-3rd`                                         | `Aug 03, 2024, 12:00:00.000 AM - Aug 04, 2024, 12:00:00.000 AM` |
 | `aug-4th`                                         | `Aug 04, 2024, 12:00:00.000 AM - Aug 05, 2024, 12:00:00.000 AM` |
-| `aug.`                                            | `Jul 31, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `aug.`                                            | `Aug 01, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `aug. 1 '20`                                      | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `aug. 1 20`                                       | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `aug. 1 2020`                                     | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
@@ -546,53 +546,55 @@ This is list is compiled from testcases:
 | `aug_2nd`                                         | `Aug 02, 2024, 12:00:00.000 AM - Aug 03, 2024, 12:00:00.000 AM` |
 | `aug_3rd`                                         | `Aug 03, 2024, 12:00:00.000 AM - Aug 04, 2024, 12:00:00.000 AM` |
 | `aug_4th`                                         | `Aug 04, 2024, 12:00:00.000 AM - Aug 05, 2024, 12:00:00.000 AM` |
-| `august`                                          | `Jul 31, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `august`                                          | `Aug 01, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `day after tomorrow`                              | `Jan 03, 2024, 12:00:00.000 AM - Jan 04, 2024, 12:00:00.000 AM` |
 | `day after tomorrow at 3pm`                       | `Jan 03, 2024, 03:00:00.000 PM`                                 |
 | `day before yesterday`                            | `Dec 30, 2023, 12:00:00.000 AM - Dec 31, 2023, 12:00:00.000 AM` |
 | `day before yesterday at 3pm`                     | `Dec 30, 2023, 03:00:00.000 PM`                                 |
 | `first`                                           | `Jan 01, 2024, 12:00:00.000 AM - Jan 02, 2024, 12:00:00.000 AM` |
-| `from aug 9 - sep`                                | `Aug 09, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `from aug 9 - sep`                                | `Aug 09, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `from aug 9 - sep 8`                              | `Aug 09, 2024, 12:00:00.000 AM - Sep 08, 2024, 12:00:00.000 AM` |
 | `from aug 9 through sep`                          | `Aug 09, 2024, 12:00:00.000 AM - Oct 01, 2024, 12:00:00.000 AM` |
 | `from aug 9 through sep 8`                        | `Aug 09, 2024, 12:00:00.000 AM - Sep 09, 2024, 12:00:00.000 AM` |
 | `from aug 9 to sep 8`                             | `Aug 09, 2024, 12:00:00.000 AM - Sep 08, 2024, 12:00:00.000 AM` |
-| `from aug 9 until sep`                            | `Aug 09, 2024, 12:00:00.000 AM - Aug 31, 2024, 12:00:00.000 AM` |
+| `from aug 9 until sep`                            | `Aug 09, 2024, 12:00:00.000 AM - Sep 01, 2024, 12:00:00.000 AM` |
 | `from aug 9 until sep 8`                          | `Aug 09, 2024, 12:00:00.000 AM - Sep 08, 2024, 12:00:00.000 AM` |
 | `jun 1-aug 3 last year`                           | `Jun 01, 2023, 12:00:00.000 AM - Aug 03, 2023, 12:00:00.000 AM` |
-| `jun-aug 2021`                                    | `May 31, 2021, 12:00:00.000 AM - Jul 31, 2021, 12:00:00.000 AM` |
-| `jun-aug last year`                               | `May 31, 2023, 12:00:00.000 AM - Jul 31, 2023, 12:00:00.000 AM` |
-| `june after next`                                 | `May 31, 2025, 12:00:00.000 AM - Jul 01, 2025, 12:00:00.000 AM` |
+| `jun-aug 2021`                                    | `Jun 01, 2021, 12:00:00.000 AM - Aug 01, 2021, 12:00:00.000 AM` |
+| `jun-aug last year`                               | `Jun 01, 2023, 12:00:00.000 AM - Aug 01, 2023, 12:00:00.000 AM` |
+| `june after next`                                 | `Jun 01, 2025, 12:00:00.000 AM - Jul 01, 2025, 12:00:00.000 AM` |
 | `june before last`                                | `Jun 01, 2022, 12:00:00.000 AM - Jul 01, 2022, 12:00:00.000 AM` |
 | `last hour`                                       | `Dec 31, 2023, 11:00:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
 | `last jun`                                        | `Jun 01, 2023, 12:00:00.000 AM - Jul 01, 2023, 12:00:00.000 AM` |
 | `last june`                                       | `Jun 01, 2023, 12:00:00.000 AM - Jul 01, 2023, 12:00:00.000 AM` |
-| `last month`                                      | `Nov 30, 2023, 12:00:00.000 AM - Dec 30, 2023, 12:00:00.000 AM` |
+| `last month`                                      | `Dec 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `last sun`                                        | `Dec 31, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `last sunday`                                     | `Dec 31, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
+| `last three months`                               | `Oct 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `last week`                                       | `Dec 25, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
-| `last week through next month`                    | `Dec 25, 2023, 12:00:00.000 AM - Mar 02, 2024, 12:00:00.000 AM` |
+| `last week through next month`                    | `Dec 25, 2023, 12:00:00.000 AM - Mar 01, 2024, 12:00:00.000 AM` |
 | `last week through next week`                     | `Dec 25, 2023, 12:00:00.000 AM - Jan 15, 2024, 12:00:00.000 AM` |
-| `last week to next month`                         | `Dec 25, 2023, 12:00:00.000 AM - Jan 31, 2024, 12:00:00.000 AM` |
-| `last year`                                       | `Dec 31, 2022, 12:00:00.000 AM - Dec 31, 2023, 12:00:00.000 AM` |
+| `last week to next month`                         | `Dec 25, 2023, 12:00:00.000 AM - Feb 01, 2024, 12:00:00.000 AM` |
+| `last year`                                       | `Jan 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `last year may 26`                                | `May 26, 2023, 12:00:00.000 AM - May 27, 2023, 12:00:00.000 AM` |
 | `may 26 last year`                                | `May 26, 2023, 12:00:00.000 AM - May 27, 2023, 12:00:00.000 AM` |
 | `may 26 next year`                                | `May 26, 2025, 12:00:00.000 AM - May 27, 2025, 12:00:00.000 AM` |
 | `may 26 next year at 3pm`                         | `May 26, 2025, 03:00:00.000 PM`                                 |
 | `may 26 the year after next`                      | `May 26, 2026, 12:00:00.000 AM - May 27, 2026, 12:00:00.000 AM` |
 | `may 26 this year`                                | `May 26, 2024, 12:00:00.000 AM - May 27, 2024, 12:00:00.000 AM` |
-| `month after next`                                | `Feb 29, 2024, 12:00:00.000 AM - Mar 29, 2024, 12:00:00.000 AM` |
-| `month before last`                               | `Oct 31, 2023, 12:00:00.000 AM - Dec 01, 2023, 12:00:00.000 AM` |
-| `next jun`                                        | `May 31, 2024, 12:00:00.000 AM - Jul 01, 2024, 12:00:00.000 AM` |
-| `next jun 1`                                      | `May 01, 2024, 12:00:00.000 AM - May 02, 2024, 12:00:00.000 AM` |
-| `next jun 1st`                                    | `May 01, 2024, 12:00:00.000 AM - May 02, 2024, 12:00:00.000 AM` |
-| `next jun 1st at 8pm`                             | `May 01, 2024, 08:00:00.000 PM`                                 |
-| `next june`                                       | `May 31, 2024, 12:00:00.000 AM - Jul 01, 2024, 12:00:00.000 AM` |
-| `next month`                                      | `Jan 31, 2024, 12:00:00.000 AM - Mar 02, 2024, 12:00:00.000 AM` |
+| `month after next`                                | `Mar 01, 2024, 12:00:00.000 AM - Apr 01, 2024, 12:00:00.000 AM` |
+| `month before last`                               | `Nov 01, 2023, 12:00:00.000 AM - Dec 01, 2023, 12:00:00.000 AM` |
+| `next 3 months`                                   | `Jan 01, 2024, 12:00:00.000 AM - Apr 01, 2024, 12:00:00.000 AM` |
+| `next jun`                                        | `Jun 01, 2024, 12:00:00.000 AM - Jul 01, 2024, 12:00:00.000 AM` |
+| `next jun 1`                                      | `Jun 01, 2024, 12:00:00.000 AM - Jun 02, 2024, 12:00:00.000 AM` |
+| `next jun 1st`                                    | `Jun 01, 2024, 12:00:00.000 AM - Jun 02, 2024, 12:00:00.000 AM` |
+| `next jun 1st at 8pm`                             | `Jun 01, 2024, 08:00:00.000 PM`                                 |
+| `next june`                                       | `Jun 01, 2024, 12:00:00.000 AM - Jul 01, 2024, 12:00:00.000 AM` |
+| `next month`                                      | `Feb 01, 2024, 12:00:00.000 AM - Mar 01, 2024, 12:00:00.000 AM` |
 | `next sunday`                                     | `Jan 07, 2024, 12:00:00.000 AM - Jan 08, 2024, 12:00:00.000 AM` |
 | `next sunday at 3pm`                              | `Jan 07, 2024, 03:00:00.000 PM`                                 |
 | `next week`                                       | `Jan 08, 2024, 12:00:00.000 AM - Jan 15, 2024, 12:00:00.000 AM` |
-| `next year`                                       | `Dec 31, 2024, 12:00:00.000 AM - Dec 31, 2025, 12:00:00.000 AM` |
+| `next year`                                       | `Jan 01, 2025, 12:00:00.000 AM - Jan 01, 2026, 12:00:00.000 AM` |
 | `now until tomorrow`                              | `Jan 01, 2024, 12:00:00.000 AM - Jan 02, 2024, 12:00:00.000 AM` |
 | `one day ago`                                     | `Dec 31, 2023, 12:00:00.000 AM`                                 |
 | `one month ago`                                   | `Dec 01, 2023, 12:00:00.000 AM`                                 |
@@ -614,18 +616,18 @@ This is list is compiled from testcases:
 | `the day before yesterday at 3pm`                 | `Dec 30, 2023, 03:00:00.000 PM`                                 |
 | `the first`                                       | `Jan 01, 2024, 12:00:00.000 AM - Jan 02, 2024, 12:00:00.000 AM` |
 | `the last three months`                           | `Oct 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
-| `the month after next`                            | `Feb 29, 2024, 12:00:00.000 AM - Mar 29, 2024, 12:00:00.000 AM` |
-| `the month before last`                           | `Oct 31, 2023, 12:00:00.000 AM - Dec 01, 2023, 12:00:00.000 AM` |
+| `the month after next`                            | `Mar 01, 2024, 12:00:00.000 AM - Apr 01, 2024, 12:00:00.000 AM` |
+| `the month before last`                           | `Nov 01, 2023, 12:00:00.000 AM - Dec 01, 2023, 12:00:00.000 AM` |
 | `the next 3 months`                               | `Jan 01, 2024, 12:00:00.000 AM - Apr 01, 2024, 12:00:00.000 AM` |
 | `the next 3 months and 2 days`                    | `Jan 01, 2024, 12:00:00.000 AM - Apr 03, 2024, 12:00:00.000 AM` |
 | `the past 3 months`                               | `Oct 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `the past 3 months and 2 days`                    | `Sep 29, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
-| `the past week through next month`                | `Dec 25, 2023, 12:00:00.000 AM - Mar 02, 2024, 12:00:00.000 AM` |
+| `the past week through next month`                | `Dec 25, 2023, 12:00:00.000 AM - Mar 01, 2024, 12:00:00.000 AM` |
 | `the second`                                      | `Jan 02, 2024, 12:00:00.000 AM - Jan 03, 2024, 12:00:00.000 AM` |
 | `the third`                                       | `Jan 03, 2024, 12:00:00.000 AM - Jan 04, 2024, 12:00:00.000 AM` |
 | `the week before last`                            | `Dec 18, 2023, 12:00:00.000 AM - Dec 25, 2023, 12:00:00.000 AM` |
 | `third`                                           | `Jan 03, 2024, 12:00:00.000 AM - Jan 04, 2024, 12:00:00.000 AM` |
-| `this month`                                      | `Dec 31, 2023, 12:00:00.000 AM - Jan 31, 2024, 12:00:00.000 AM` |
+| `this month`                                      | `Jan 01, 2024, 12:00:00.000 AM - Feb 01, 2024, 12:00:00.000 AM` |
 | `three days ago`                                  | `Dec 29, 2023, 12:00:00.000 AM`                                 |
 | `three days from now`                             | `Jan 04, 2024, 12:00:00.000 AM`                                 |
 | `three days from now at 3pm`                      | `Jan 04, 2024, 03:00:00.000 PM`                                 |

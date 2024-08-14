@@ -1356,8 +1356,8 @@ export class RangeEndDateTimeOffsetIntervalNode extends DateTimeOffsetIntervalNo
 
 export const DateTimeOffsetIntervalBase = group(
   oneOf(
-    named('Past', /the\s+(past|last)/i),
-    named('Future', /the\s+(next|coming)/i)
+    named('Past', /(the\s+)?(past|last)/i),
+    named('Future', /(the\s+)?(next|coming)/i)
   ),
   space,
   oneOf(DateTimeInterval, DateTimeOffsetIntervalUnit)
