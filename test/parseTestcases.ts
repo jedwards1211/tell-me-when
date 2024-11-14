@@ -835,8 +835,18 @@ export const parseTestcases: Record<
     ['addMonths', -3],
     ['makeInterval', ['now']],
   ],
+  'past 3 months': { ref: 'the past 3 months' },
+  'last 3 months': { ref: 'the past 3 months' },
   'the last three months': { ref: 'the past 3 months' },
   'last three months': { ref: 'the past 3 months' },
+  'the past 5 mins': [
+    ['addMinutes', -5],
+    ['makeInterval', ['now']],
+  ],
+  'past 5 mins': { ref: 'the past 5 mins' },
+  'last 5 mins': { ref: 'the past 5 mins' },
+  'the last five minutes': { ref: 'the past 5 mins' },
+  'last five minutes': { ref: 'the past 5 mins' },
   'the past 3 months and 2 days': [
     ['addMonths', -3],
     ['addDays', -2],
