@@ -51,13 +51,13 @@ pnpm i tell-me-when
 ## API Example
 
 ```ts
-import { tellMeWhen } from "tell-me-when";
+import { tellMeWhen } from 'tell-me-when'
 
 console.log(
-  tellMeWhen("1 hour ago", {
-    now: new Date("Aug 14, 2024 12:09:27 AM"),
-  }).toLocaleString("en-US")
-);
+  tellMeWhen('1 hour ago', {
+    now: new Date('Aug 14, 2024 12:09:27 AM'),
+  }).toLocaleString('en-US')
+)
 // 8/14/2024, 11:09:27 AM
 ```
 
@@ -86,118 +86,118 @@ export type DateFn =
   /**
    * Set Date to now
    */
-  | ["now"]
+  | ['now']
   /**
    * Set year of date to the given value
    */
-  | ["setYear", number]
+  | ['setYear', number]
   /**
    * Set month of date to the given value (0-11)
    */
-  | ["setMonth", number]
+  | ['setMonth', number]
   /**
    * Set day of month of date to the given value (1-31)
    */
-  | ["setDate", number]
+  | ['setDate', number]
   /**
    * Set day of week of date to the given value
    */
-  | ["setDay", number]
+  | ['setDay', number]
   /**
    * Set hour of date to the given value
    */
-  | ["setHours", number]
+  | ['setHours', number]
   /**
    * Set minutes of date to the given value
    */
-  | ["setMinutes", number]
+  | ['setMinutes', number]
   /**
    * Set seconds of date to the given value
    */
-  | ["setSeconds", number]
+  | ['setSeconds', number]
   /**
    * Set milliseconds of date to the given value
    */
-  | ["setMilliseconds", number]
+  | ['setMilliseconds', number]
   | AddFn
   /**
    * Set date to the start of its current year
    */
-  | ["startOfYear"]
+  | ['startOfYear']
   /**
    * Set date to the start of its current month
    */
-  | ["startOfMonth"]
+  | ['startOfMonth']
   /**
    * Set date to the start of its current week
    */
-  | ["startOfWeek"]
+  | ['startOfWeek']
   /**
    * Set date to the start of its current day
    */
-  | ["startOfDay"]
+  | ['startOfDay']
   /**
    * Set date to the start of its current hour
    */
-  | ["startOfHour"]
+  | ['startOfHour']
   /**
    * Set date to the start of its current minute
    */
-  | ["startOfMinute"]
+  | ['startOfMinute']
   /**
    * Set date to the start of its current second
    */
-  | ["startOfSecond"]
+  | ['startOfSecond']
   /**
    * Make an interval from the current date to the result of
    * applying the given DateFns to it
    */
-  | ["makeInterval", ...DateFn[]]
+  | ['makeInterval', ...DateFn[]]
   /**
    * If the current date is before now, apply beforeNow DateFns;
    * if it is after now, apply afterNow DateFns
    */
-  | ["if", { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
+  | ['if', { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
   /**
    * Select whichever is closer to now: the result of applying
    * `a` DateFns to the current date, or the result of applying
    * `b` DateFns to the current date
    */
-  | ["closestToNow", a: DateFn[], b: DateFn[]];
+  | ['closestToNow', a: DateFn[], b: DateFn[]]
 
 export type AddFn =
   /**
    * Add the given number of years to the date
    */
-  | ["addYears", number]
+  | ['addYears', number]
   /**
    * Add the given number of months to the date
    */
-  | ["addMonths", number]
+  | ['addMonths', number]
   /**
    * Add the given number of weeks to the date
    */
-  | ["addWeeks", number]
+  | ['addWeeks', number]
   /**
    * Add the given number of days to the date
    */
-  | ["addDays", number]
+  | ['addDays', number]
   /**
    * Add the given number of hours to the date
    */
-  | ["addHours", number]
+  | ['addHours', number]
   /**
    * Add the given number of minutes to the date
    */
-  | ["addMinutes", number]
+  | ['addMinutes', number]
   /**
    * Add the given number of seconds to the date
    */
-  | ["addSeconds", number]
+  | ['addSeconds', number]
   /**
    * Add the given number of milliseconds to the date
    */
-  | ["addMilliseconds", number];
+  | ['addMilliseconds', number]
 ```
 
 ## `class ParseError extends Error`
@@ -564,6 +564,9 @@ This is list is compiled from testcases:
 | `jun-aug last year`                               | `Jun 01, 2023, 12:00:00.000 AM - Aug 01, 2023, 12:00:00.000 AM` |
 | `june after next`                                 | `Jun 01, 2025, 12:00:00.000 AM - Jul 01, 2025, 12:00:00.000 AM` |
 | `june before last`                                | `Jun 01, 2022, 12:00:00.000 AM - Jul 01, 2022, 12:00:00.000 AM` |
+| `last 3 months`                                   | `Oct 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
+| `last 5 mins`                                     | `Dec 31, 2023, 11:55:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
+| `last five minutes`                               | `Dec 31, 2023, 11:55:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
 | `last hour`                                       | `Dec 31, 2023, 11:00:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
 | `last jun`                                        | `Jun 01, 2023, 12:00:00.000 AM - Jul 01, 2023, 12:00:00.000 AM` |
 | `last june`                                       | `Jun 01, 2023, 12:00:00.000 AM - Jul 01, 2023, 12:00:00.000 AM` |
@@ -600,6 +603,8 @@ This is list is compiled from testcases:
 | `one month ago`                                   | `Dec 01, 2023, 12:00:00.000 AM`                                 |
 | `one month from now`                              | `Feb 01, 2024, 12:00:00.000 AM`                                 |
 | `one month in the future`                         | `Feb 01, 2024, 12:00:00.000 AM`                                 |
+| `past 3 months`                                   | `Oct 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
+| `past 5 mins`                                     | `Dec 31, 2023, 11:55:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
 | `second`                                          | `Jan 02, 2024, 12:00:00.000 AM - Jan 03, 2024, 12:00:00.000 AM` |
 | `sun`                                             | `Dec 31, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `sunday`                                          | `Dec 31, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
@@ -615,6 +620,7 @@ This is list is compiled from testcases:
 | `the day before yesterday at 2am until now`       | `Dec 30, 2023, 02:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `the day before yesterday at 3pm`                 | `Dec 30, 2023, 03:00:00.000 PM`                                 |
 | `the first`                                       | `Jan 01, 2024, 12:00:00.000 AM - Jan 02, 2024, 12:00:00.000 AM` |
+| `the last five minutes`                           | `Dec 31, 2023, 11:55:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
 | `the last three months`                           | `Oct 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `the month after next`                            | `Mar 01, 2024, 12:00:00.000 AM - Apr 01, 2024, 12:00:00.000 AM` |
 | `the month before last`                           | `Nov 01, 2023, 12:00:00.000 AM - Dec 01, 2023, 12:00:00.000 AM` |
@@ -622,6 +628,7 @@ This is list is compiled from testcases:
 | `the next 3 months and 2 days`                    | `Jan 01, 2024, 12:00:00.000 AM - Apr 03, 2024, 12:00:00.000 AM` |
 | `the past 3 months`                               | `Oct 01, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `the past 3 months and 2 days`                    | `Sep 29, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
+| `the past 5 mins`                                 | `Dec 31, 2023, 11:55:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
 | `the past week through next month`                | `Dec 25, 2023, 12:00:00.000 AM - Mar 01, 2024, 12:00:00.000 AM` |
 | `the second`                                      | `Jan 02, 2024, 12:00:00.000 AM - Jan 03, 2024, 12:00:00.000 AM` |
 | `the third`                                       | `Jan 03, 2024, 12:00:00.000 AM - Jan 04, 2024, 12:00:00.000 AM` |
