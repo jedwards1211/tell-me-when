@@ -69,7 +69,7 @@ export class MonthNumNode extends ParseNode {
     ]
   }
 }
-const MonthNum = token(/0?[1-9]|1[0-2]/).parseAs(MonthNumNode)
+const MonthNum = token(/1[0-2]|0?[1-9]/).parseAs(MonthNumNode)
 
 export class MonthNameNode extends ParseNode {
   static months = {
