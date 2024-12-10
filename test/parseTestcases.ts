@@ -1092,34 +1092,34 @@ export const parseTestcases: Record<
     ['startOfDay'],
     ['makeInterval', ['setMonth', 7], ['setDate', 3], ['startOfDay']],
   ],
-  '10/13/2024 12pm - now': [
-    ['setYear', 2024],
+  '10/13/2023 12pm - now': [
+    ['setYear', 2023],
     ['setMonth', 9],
     ['setDate', 13],
     ['setHours', 12],
     ['startOfHour'],
     ['makeInterval', ['now']],
   ],
-  '10/13/2024 11am - now': [
-    ['setYear', 2024],
+  '10/13/2023 11am - now': [
+    ['setYear', 2023],
     ['setMonth', 9],
     ['setDate', 13],
     ['setHours', 11],
     ['startOfHour'],
     ['makeInterval', ['now']],
   ],
-  '10/13/2024 12am - now': [
-    ['setYear', 2024],
+  '10/13/2023 12am - now': [
+    ['setYear', 2023],
     ['setMonth', 9],
     ['setDate', 13],
     ['setHours', 0],
     ['startOfHour'],
     ['makeInterval', ['now']],
   ],
-  '10/13/2024 12am to now': { ref: '10/13/2024 12am - now' },
-  '10-13-2024 12am to now': { ref: '10/13/2024 12am - now' },
-  '2024/10/13 12am - now': { ref: '10/13/2024 12am - now' },
-  '2024/10/13 12am to now': { ref: '10/13/2024 12am - now' },
+  '10/13/2023 12am to now': { ref: '10/13/2023 12am - now' },
+  '10-13-2023 12am to now': { ref: '10/13/2023 12am - now' },
+  '2023/10/13 12am - now': { ref: '10/13/2023 12am - now' },
+  '2023/10/13 12am to now': { ref: '10/13/2023 12am - now' },
 }
 
 export const supportedValues = Object.keys(parseTestcases)
