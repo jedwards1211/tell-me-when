@@ -423,6 +423,8 @@ export const parseTestcases: Record<
   'aug 6 at 1am': { ref: 'aug 6 1am' },
   'aug 6 at 1': { ref: 'aug 6 1am' },
   '1am on aug 6': { ref: 'aug 6 1am' },
+  '1am, aug 6': { ref: 'aug 6 1am' },
+  '1am,aug 6': { ref: 'aug 6 1am' },
   '1 on aug 6': { ref: 'aug 6 1am' },
   '1am aug 6': { ref: 'aug 6 1am' },
   'aug 6 1:23am': [
@@ -806,6 +808,9 @@ export const parseTestcases: Record<
   'yesterday 4pm to 2h later': {
     ref: 'yesterday at 4pm to two hours later',
   },
+  'yesterday, 4pm to 2h later': {
+    ref: 'yesterday at 4pm to two hours later',
+  },
   'yesterday at 4pm to two hours after that': {
     ref: 'yesterday at 4pm to two hours later',
   },
@@ -1120,6 +1125,18 @@ export const parseTestcases: Record<
   '10-13-2023 12am to now': { ref: '10/13/2023 12am - now' },
   '2023/10/13 12am - now': { ref: '10/13/2023 12am - now' },
   '2023/10/13 12am to now': { ref: '10/13/2023 12am - now' },
+  '10/3/2023 9:00:00 AM to now': [
+    ['setYear', 2023],
+    ['setMonth', 9],
+    ['setDate', 3],
+    ['setHours', 9],
+    ['setMinutes', 0],
+    ['setSeconds', 0],
+    ['startOfSecond'],
+    ['makeInterval', ['now']],
+  ],
+  '10/3/2023, 9:00:00 AM to now': { ref: '10/3/2023 9:00:00 AM to now' },
+  '10/3/2023,9:00:00 AM to now': { ref: '10/3/2023 9:00:00 AM to now' },
 }
 
 export const supportedValues = Object.keys(parseTestcases)

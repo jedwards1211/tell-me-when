@@ -1424,10 +1424,10 @@ export const DateTime = named(
     DateTimeOffsetInterval,
     group(
       oneOf(DateTimeOffset, SpecificDay),
-      group(space, group('at', space).maybe(), AtTime).maybe()
+      group(/\s+(at\s+)?|\s*,\s*|\s+/i, AtTime).maybe()
     ),
-    group(Time, group(space, group('on', space).maybe(), SpecificDay).maybe()),
-    group(AtTime, group(space, group('on', space), SpecificDay)),
+    group(Time, group(/\s+(on\s+)?|\s*,\s*|\s+/i, SpecificDay).maybe()),
+    group(AtTime, group(/\s+(on\s+)?|\s*,\s*/i, SpecificDay)),
     Now
   )
 ).parseAs(DateTimeNode)

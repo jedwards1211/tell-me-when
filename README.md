@@ -274,6 +274,9 @@ This is list is compiled from testcases:
 | `10/13/2023 12am - now`                           | `Oct 13, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `10/13/2023 12am to now`                          | `Oct 13, 2023, 12:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `10/13/2023 12pm - now`                           | `Oct 13, 2023, 12:00:00.000 PM - Jan 01, 2024, 12:00:00.000 AM` |
+| `10/3/2023 9:00:00 AM to now`                     | `Oct 03, 2023, 09:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
+| `10/3/2023, 9:00:00 AM to now`                    | `Oct 03, 2023, 09:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
+| `10/3/2023,9:00:00 AM to now`                     | `Oct 03, 2023, 09:00:00.000 AM - Jan 01, 2024, 12:00:00.000 AM` |
 | `12 am aug 6`                                     | `Aug 06, 2024, 12:00:00.000 AM`                                 |
 | `12am aug 6`                                      | `Aug 06, 2024, 12:00:00.000 AM`                                 |
 | `1:23 aug 6`                                      | `Aug 06, 2024, 01:23:00.000 AM`                                 |
@@ -299,6 +302,8 @@ This is list is compiled from testcases:
 | `1am aug 6 2020`                                  | `Aug 06, 2020, 01:00:00.000 AM`                                 |
 | `1am on aug 6`                                    | `Aug 06, 2024, 01:00:00.000 AM`                                 |
 | `1am on aug 6 2020`                               | `Aug 06, 2020, 01:00:00.000 AM`                                 |
+| `1am, aug 6`                                      | `Aug 06, 2024, 01:00:00.000 AM`                                 |
+| `1am,aug 6`                                       | `Aug 06, 2024, 01:00:00.000 AM`                                 |
 | `1aug`                                            | `Aug 01, 2024, 12:00:00.000 AM - Aug 02, 2024, 12:00:00.000 AM` |
 | `1aug20`                                          | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
 | `1aug2020`                                        | `Aug 01, 2020, 12:00:00.000 AM - Aug 02, 2020, 12:00:00.000 AM` |
@@ -670,5 +675,6 @@ This is list is compiled from testcases:
 | `yesterday at 4pm to two hours thereafter`        | `Dec 31, 2023, 04:00:00.000 PM - Dec 31, 2023, 06:00:00.000 PM` |
 | `yesterday through two months from now`           | `Dec 31, 2023, 12:00:00.000 AM - Mar 01, 2024, 12:00:00.000 AM` |
 | `yesterday to two months from now`                | `Dec 31, 2023, 12:00:00.000 AM - Mar 01, 2024, 12:00:00.000 AM` |
+| `yesterday, 4pm to 2h later`                      | `Dec 31, 2023, 04:00:00.000 PM - Dec 31, 2023, 06:00:00.000 PM` |
 
 <!-- exampleend -->
