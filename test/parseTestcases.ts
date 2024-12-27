@@ -1137,6 +1137,21 @@ export const parseTestcases: Record<
   ],
   '10/3/2023, 9:00:00 AM to now': { ref: '10/3/2023 9:00:00 AM to now' },
   '10/3/2023,9:00:00 AM to now': { ref: '10/3/2023 9:00:00 AM to now' },
+  '2001/10/10': [
+    ['setYear', 2001],
+    ['setMonth', 9],
+    ['setDate', 10],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  '2000/1/1 21:00': [
+    ['setYear', 2000],
+    ['setMonth', 0],
+    ['setDate', 1],
+    ['setHours', 21],
+    ['setMinutes', 0],
+    ['startOfMinute'],
+  ],
 }
 
 export const supportedValues = Object.keys(parseTestcases)

@@ -192,7 +192,9 @@ export class DayOfMonthNumNode extends ParseNode {
     return parseInt(this.substringOf(input))
   }
 }
-const DayOfMonthNum = token(/[0-2]?[1-9]|3[01]/).parseAs(DayOfMonthNumNode)
+const DayOfMonthNum = token(/[12][0-9]|3[01]|0?[1-9]/).parseAs(
+  DayOfMonthNumNode
+)
 
 export class NthDayOfMonthNode extends ParseNode {
   constructor(public wrapped: ParseNode) {
@@ -419,7 +421,7 @@ export class DateNode extends ParseNode {
     const month = (
       this?.find(MonthNumNode) || this?.find(MonthNameNode)
     )?.month(input)
-    return month ? [['setMonth', month]] : undefined
+    return month != null ? [['setMonth', month]] : undefined
   }
   relativeMonthFns(input: string): DateFn[] | undefined {
     return this.find(RelativeMonthNameNode)
@@ -691,7 +693,7 @@ export class HoursNode extends ParseNode {
     return parseInt(this.substringOf(input))
   }
 }
-const Hours = named('Hours', /[01]?[0-9]|2[0-3]/).parseAs(HoursNode)
+const Hours = named('Hours', /2[0-3]|[01]?[0-9]/).parseAs(HoursNode)
 export class MinutesNode extends ParseNode {
   minutes(input: string) {
     return parseInt(this.substringOf(input))
