@@ -1,4 +1,4 @@
-import { DateFn } from '../src/DateFn'
+import type { DateFn } from '../src/DateFn'
 
 export const parseTestcases: Record<
   string,
@@ -1152,6 +1152,49 @@ export const parseTestcases: Record<
     ['setMinutes', 0],
     ['startOfMinute'],
   ],
+
+  // Japanese
+  '2021年': { ref: '2021' },
+  '2021年8月': { ref: '2021aug' },
+  '2021年8月6日': { ref: '2021aug06' },
+  '2021年12月24日': [
+    ['setYear', 2021],
+    ['setMonth', 11],
+    ['setDate', 24],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  ['二〇二一年']: { ref: '2021' },
+  ['二〇二一年八月']: { ref: '2021aug' },
+  ['二〇二一年〇八月']: { ref: '2021aug' },
+  ['二〇二一年葉月']: { ref: '2021aug' },
+  ['二〇二一年八月六日']: { ref: '2021aug06' },
+  ['二〇二一年〇八月〇六日']: { ref: '2021aug06' },
+  ['2021年八月六日']: { ref: '2021aug06' },
+  ['二〇二一年葉月六日']: { ref: '2021aug06' },
+  ['二〇〇一年十月十日']: { ref: '2001/10/10' },
+  ['二〇二一年十月十一日']: [
+    ['setYear', 2021],
+    ['setMonth', 9],
+    ['setDate', 11],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  ['二〇二一年十一月二十日']: [
+    ['setYear', 2021],
+    ['setMonth', 10],
+    ['setDate', 20],
+    ['startOfDay'],
+    ['makeInterval', ['addDays', 1]],
+  ],
+  ['二〇二一年十一月二〇日']: { ref: '二〇二一年十一月二十日' },
+  ['二〇二一年十二月二十四日']: { ref: '2021年12月24日' },
+  '8月1日': { ref: 'aug1' },
+  '8月': { ref: 'aug' },
+  ['葉月']: { ref: 'aug' },
+  ['八月']: { ref: 'aug' },
+  '1日': { ref: '1st' },
+  ['一日']: { ref: '1st' },
 }
 
 export const supportedValues = Object.keys(parseTestcases)
