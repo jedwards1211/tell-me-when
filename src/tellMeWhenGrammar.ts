@@ -28,7 +28,10 @@ class RangeNode extends ParseNode {
   }
 }
 
-const Range = named('Range', oneOf(EnglishGrammar.Range)).parseAs(RangeNode)
+const Range = named(
+  'Range',
+  oneOf(JapaneseGrammar.Range, EnglishGrammar.Range)
+).parseAs(RangeNode)
 
 export class RootNode extends ParseNode {
   dateFns(input: string): DateFn[] {

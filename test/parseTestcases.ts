@@ -1210,6 +1210,10 @@ export const parseTestcases: Record<
   ['午後四時五十六分']: { ref: '午後4時56分' },
   '8月6日午前1時23分': { ref: 'aug 6 1:23am' },
   '八月六日 午前一時二十三分': { ref: 'aug 6 1:23am' },
+  '8月9日から9月8日': { ref: 'aug 9 to sep 8' },
+  '8月9日から9月8日まで': { ref: 'aug 9 to sep 8' },
+  '8月9日 ～ 9月8日': { ref: 'aug 9 to sep 8' },
+  '8月9日 - 9月8日': { ref: 'aug 9 to sep 8' },
 }
 
 export const supportedValues = Object.keys(parseTestcases)

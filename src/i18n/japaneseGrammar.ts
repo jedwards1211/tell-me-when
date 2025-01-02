@@ -266,3 +266,17 @@ export const DateTime = named(
   'JapaneseDateTime',
   longestOf(Date, Time, group(Date, group(space.maybe(), Time)))
 ).parseAs(DateTimeNode)
+
+export const Range = named(
+  'Range',
+  group(
+    named('RangeStart', DateTime),
+    group(
+      space.maybe(),
+      oneOf('から', '～', '－', 'ー', '~', '-'),
+      space.maybe()
+    ),
+    named('RangeEnd', DateTime),
+    group(space.maybe(), 'まで').maybe()
+  )
+).parseAs(EnglishGrammar.RangeNode)
