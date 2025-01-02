@@ -3,6 +3,7 @@ import * as EnglishGrammar from './englishGrammar'
 import { ParseNode } from '../ParseNode'
 import type { DateFn } from '../DateFn'
 const { group, named, oneOf, longestOf } = GrammarNode
+const { space, AmPmValue } = EnglishGrammar
 
 const kanjiNumberMap = new Map([
   ['〇', '0'],
@@ -91,13 +92,11 @@ class DayOfMonthNode extends EnglishGrammar.DayOfMonthNumNode {
     switch (dayText) {
       case '十':
         return 10
-      case '二十':
-      case '三十':
-        return parseInt(kanjiNumberMap.get(input.charAt(0))!) * 10
       default:
         return parseInt(
           dayText
             .replace(/^十/, '一')
+            .replace(/十$/, '〇')
             .replace('十', '')
             .split('')
             .map((char) => kanjiNumberMap.get(char) ?? char)
@@ -139,12 +138,131 @@ const Date = named(
   )
 ).parseAs(DateNode)
 
+class HoursNode extends EnglishGrammar.HoursNode {
+  hours(input: string): number {
+    const hoursText = input.substring(this.from, this.to - 1)
+    switch (hoursText) {
+      case '零':
+        return 0
+      case '十':
+        return 10
+      default:
+        return parseInt(
+          hoursText
+            .replace(/^十/, '一')
+            .replace(/十$/, '〇')
+            .replace('十', '')
+            .split('')
+            .map((char) => kanjiNumberMap.get(char) ?? char)
+            .join('')
+        )
+    }
+  }
+}
+const Hours = named(
+  'JapaneseHours',
+  /(2[0-3]|[01]?[0-9]|二?十[一二三]?|十?[一二三四五六七八九]|零)時/
+).parseAs(HoursNode)
+
+class MinutesNode extends EnglishGrammar.MinutesNode {
+  minutes(input: string) {
+    const minutesText = input.substring(this.from, this.to - 1)
+    switch (minutesText) {
+      case '零':
+        return 0
+      case '十':
+        return 10
+      default:
+        return parseInt(
+          minutesText
+            .replace(/^十/, '一')
+            .replace(/十$/, '〇')
+            .replace('十', '')
+            .split('')
+            .map((char) => kanjiNumberMap.get(char) ?? char)
+            .join('')
+        )
+    }
+  }
+}
+const Minutes = named(
+  'JapaneseMinutes',
+  /([0-5]?[0-9]|[二三四五]?十[一二三四五六七八九]?|[一二三四五六七八九]|零)分/
+).parseAs(MinutesNode)
+
+class SecondsNode extends EnglishGrammar.SecondsNode {
+  seconds(input: string): number {
+    const secondsText = input.substring(this.from, this.to - 1)
+    switch (secondsText) {
+      case '零':
+        return 0
+      case '十':
+        return 10
+      default:
+        return parseInt(
+          secondsText
+            .replace(/^十/, '一')
+            .replace(/十$/, '〇')
+            .replace('十', '')
+            .split('')
+            .map((char) => kanjiNumberMap.get(char) ?? char)
+            .join('')
+        )
+    }
+  }
+}
+const Seconds = named(
+  'JapaneseSeconds',
+  /([0-5]?[0-9]|[二三四五]?十[一二三四五六七八九]?|[一二三四五六七八九]|零)秒/
+).parseAs(SecondsNode)
+
+class TimeNode extends EnglishGrammar.TimeNode {
+  hours(input: string) {
+    return this.find(HoursNode)?.hours(input)
+  }
+  minutes(input: string) {
+    return this.find(MinutesNode)?.minutes(input)
+  }
+  seconds(input: string) {
+    return this.find(SecondsNode)?.seconds(input)
+  }
+  amPm(input: string) {
+    return this.find(AmPmNode)?.amPm(input)
+  }
+}
+
+class AmPmNode extends EnglishGrammar.AmPmNode {
+  amPm(input: string) {
+    switch (this.substringOf(input)) {
+      case '午前':
+        return AmPmValue.AM
+      case '午後':
+        return AmPmValue.PM
+      default:
+        throw new Error(`unexpected`)
+    }
+  }
+}
+const AmPm = named('JapaneseAmPm', /午[前後]/).parseAs(AmPmNode)
+
+const Time = named(
+  'Time',
+  longestOf(
+    group(AmPm.maybe(), Hours, group(Minutes, Seconds.maybe())),
+    group(AmPm.maybe(), Hours, group(Minutes, Seconds.maybe()).maybe())
+  )
+).parseAs(TimeNode)
+
 export class DateTimeNode extends EnglishGrammar.DateTimeNode {
   date(input: string): DateFn[] | undefined {
     return this.find(DateNode)?.dateFns(input)
   }
+  time(input: string): DateFn[] | undefined {
+    return this.find(TimeNode)?.dateFns(input)
+  }
 }
 
-export const DateTime = named('JapaneseDateTime', longestOf(Date)).parseAs(
-  DateTimeNode
-)
+export const DateTime = named(
+  'JapaneseDateTime',
+  longestOf(Date, Time, group(Date, group(space.maybe(), Time)))
+).parseAs(DateTimeNode)

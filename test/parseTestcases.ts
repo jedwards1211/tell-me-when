@@ -1195,6 +1195,20 @@ export const parseTestcases: Record<
   ['八月']: { ref: 'aug' },
   '1日': { ref: '1st' },
   ['一日']: { ref: '1st' },
+  '1時23分45秒': { ref: '1:23:45am' },
+  '01時23分45秒': { ref: '1:23:45am' },
+  ['一時二十三分四十五秒']: { ref: '1:23:45am' },
+  '1時59分': { ref: '01:59' },
+  ['午前1時2分3秒']: [
+    ['setHours', 1],
+    ['setMinutes', 2],
+    ['setSeconds', 3],
+    ['startOfSecond'],
+  ],
+  ['午後4時56分']: [['setHours', 16], ['setMinutes', 56], ['startOfMinute']],
+  ['午後四時五十六分']: { ref: '午後4時56分' },
+  '8月6日午前1時23分': { ref: 'aug 6 1:23am' },
+  '八月六日 午前一時二十三分': { ref: 'aug 6 1:23am' },
 }
 
 export const supportedValues = Object.keys(parseTestcases)
