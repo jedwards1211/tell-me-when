@@ -1225,7 +1225,12 @@ export const RelativeDayOfWeek = named(
 ).parseAs(RelativeDayOfWeekNode)
 
 const SpecificDay = oneOf(RelativeDay, DayDate, RelativeDayOfWeek, DayOfWeek)
-const RangeEndSpecificDay = oneOf(RangeEndRelativeDay, DayDate)
+const RangeEndSpecificDay = oneOf(
+  RangeEndRelativeDay,
+  DayDate,
+  RelativeDayOfWeek,
+  DayOfWeek
+)
 
 export abstract class RangeEndRelativeIntervalNode extends RelativeIntervalNode {
   dateFns(): DateFn[] {
