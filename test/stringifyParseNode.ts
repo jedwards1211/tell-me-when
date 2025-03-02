@@ -1,4 +1,4 @@
-import { ParseNode } from '../src/ParseNode'
+import { ParseNode } from '../src/util/ParseNode'
 
 export function stringifyParseNode(input: string, node: ParseNode): string {
   const children = node.children?.map((c) =>

@@ -1,12 +1,16 @@
 import { describe, it } from 'mocha'
 import { expect } from 'chai'
 import { parseTestcases } from './parseTestcases'
-import { parse } from '../src/parse'
-import { ParseState } from '../src/ParseState'
-import { Root } from '../src/tellMeWhenGrammar'
+import { parse } from '../src/index'
+import { ParseState } from '../src/util/ParseState'
 import { stringifyParseNode } from './stringifyParseNode'
+import { getGrammar } from '../src/util/getGrammar'
+import { locales, SupportedLocale } from '../src/locales'
 
-describe(`parse2`, function () {
+describe(`parse`, function () {
+  const Root = getGrammar({
+    locales: Object.keys(locales) as SupportedLocale[],
+  })
   for (const input of Object.keys(parseTestcases)) {
     const value = parseTestcases[input]
     const expected =
@@ -26,9 +30,9 @@ describe(`parse2`, function () {
 
       try {
         if (expected === 'error') {
-          expect(() => parse(input)).to.throw()
+          expect(() => parse(input, { grammar: Root })).to.throw()
         } else {
-          const parsed = parse(input)
+          const parsed = parse(input, { grammar: Root })
           expect(parsed).to.deep.equal(expected)
         }
       } catch (error) {

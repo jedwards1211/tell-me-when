@@ -1,9 +1,12 @@
-import { AddFn, DateFn } from './DateFn'
-import { GrammarNode } from './GrammarNode'
-import { ParseNode } from './ParseNode'
+import { AddFn, DateFn } from './util/DateFn'
+import { GrammarNode } from './util/GrammarNode'
+import { ParseNode } from './util/ParseNode'
+import { ParseRootNode } from './util/ParseRootNode'
+import * as base from './util/parse'
+
 const { token, group, named, oneOf, longestOf, negativeLookahead } = GrammarNode
 
-const space = token(/\s+/)
+export const space = token(/\s+/)
 
 export class FullYearNode extends ParseNode {
   constructor(public wrapped: ParseNode) {
@@ -1521,7 +1524,7 @@ export const Range = named(
   )
 ).parseAs(RangeNode)
 
-export class RootNode extends ParseNode {
+export class RootNode extends ParseRootNode {
   dateFns(input: string): DateFn[] {
     return (
       (this.find(RangeNode) || this.find(DateTimeNode))?.dateFns(input) || []
@@ -1534,3 +1537,11 @@ export const Root = group(
   oneOf(Range, DateTime),
   space.maybe()
 ).parseAs(RootNode)
+
+export function parse(input: string) {
+  return base.parse(input, { grammar: Root })
+}
+
+export function tellMeWhen(when: string, options?: { now?: Date }) {
+  return base.tellMeWhen(when, { ...options, grammar: Root })
+}

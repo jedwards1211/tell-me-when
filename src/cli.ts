@@ -1,5 +1,4 @@
-import { ParseError } from './ParseError'
-import { tellMeWhen } from './index'
+import { tellMeWhen, ParseError } from './index'
 
 const expr = process.argv
   .slice(2)
