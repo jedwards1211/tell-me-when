@@ -30,12 +30,6 @@ function getDefaultLocaleNames(): SupportedLocale[] {
   const primary = localeKeys.find((k) => primaryLocale.startsWith(k))
   return (defaultLocaleNames = [
     ...(primary ? [primary] : []),
-    ...Intl.DateTimeFormat.supportedLocalesOf(localeKeys, {
-      localeMatcher: 'lookup',
-    }).flatMap((key) => {
-      if (key === primary) return []
-      const found = localeKeys.find((k) => key.startsWith(k))
-      return found ? [found] : []
-    }),
+    ...localeKeys.filter((k) => k !== primary),
   ])
 }
