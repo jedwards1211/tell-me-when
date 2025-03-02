@@ -201,6 +201,7 @@ export class LongestOfNode extends GrammarNode {
       const parsed = option.parse(state)
       if (!parsed.isError && (best.isError || parsed.to > best.to)) {
         best = parsed
+        if (parsed.to === state.end) break
       }
     }
     state.index = best.isError ? startIndex : best.to

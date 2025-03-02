@@ -51,13 +51,13 @@ pnpm i tell-me-when
 ## API Example
 
 ```ts
-import { tellMeWhen } from "tell-me-when";
+import { tellMeWhen } from 'tell-me-when'
 
 console.log(
-  tellMeWhen("1 hour ago", {
-    now: new Date("Aug 14, 2024 12:09:27 AM"),
-  }).toLocaleString("en-US")
-);
+  tellMeWhen('1 hour ago', {
+    now: new Date('Aug 14, 2024 12:09:27 AM'),
+  }).toLocaleString('en-US')
+)
 // 8/14/2024, 11:09:27 AM
 ```
 
@@ -86,118 +86,118 @@ export type DateFn =
   /**
    * Set Date to now
    */
-  | ["now"]
+  | ['now']
   /**
    * Set year of date to the given value
    */
-  | ["setYear", number]
+  | ['setYear', number]
   /**
    * Set month of date to the given value (0-11)
    */
-  | ["setMonth", number]
+  | ['setMonth', number]
   /**
    * Set day of month of date to the given value (1-31)
    */
-  | ["setDate", number]
+  | ['setDate', number]
   /**
    * Set day of week of date to the given value
    */
-  | ["setDay", number]
+  | ['setDay', number]
   /**
    * Set hour of date to the given value
    */
-  | ["setHours", number]
+  | ['setHours', number]
   /**
    * Set minutes of date to the given value
    */
-  | ["setMinutes", number]
+  | ['setMinutes', number]
   /**
    * Set seconds of date to the given value
    */
-  | ["setSeconds", number]
+  | ['setSeconds', number]
   /**
    * Set milliseconds of date to the given value
    */
-  | ["setMilliseconds", number]
+  | ['setMilliseconds', number]
   | AddFn
   /**
    * Set date to the start of its current year
    */
-  | ["startOfYear"]
+  | ['startOfYear']
   /**
    * Set date to the start of its current month
    */
-  | ["startOfMonth"]
+  | ['startOfMonth']
   /**
    * Set date to the start of its current week
    */
-  | ["startOfWeek"]
+  | ['startOfWeek']
   /**
    * Set date to the start of its current day
    */
-  | ["startOfDay"]
+  | ['startOfDay']
   /**
    * Set date to the start of its current hour
    */
-  | ["startOfHour"]
+  | ['startOfHour']
   /**
    * Set date to the start of its current minute
    */
-  | ["startOfMinute"]
+  | ['startOfMinute']
   /**
    * Set date to the start of its current second
    */
-  | ["startOfSecond"]
+  | ['startOfSecond']
   /**
    * Make an interval from the current date to the result of
    * applying the given DateFns to it
    */
-  | ["makeInterval", ...DateFn[]]
+  | ['makeInterval', ...DateFn[]]
   /**
    * If the current date is before now, apply beforeNow DateFns;
    * if it is after now, apply afterNow DateFns
    */
-  | ["if", { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
+  | ['if', { beforeNow?: DateFn[]; afterNow?: DateFn[] }]
   /**
    * Select whichever is closer to now: the result of applying
    * `a` DateFns to the current date, or the result of applying
    * `b` DateFns to the current date
    */
-  | ["closestToNow", a: DateFn[], b: DateFn[]];
+  | ['closestToNow', a: DateFn[], b: DateFn[]]
 
 export type AddFn =
   /**
    * Add the given number of years to the date
    */
-  | ["addYears", number]
+  | ['addYears', number]
   /**
    * Add the given number of months to the date
    */
-  | ["addMonths", number]
+  | ['addMonths', number]
   /**
    * Add the given number of weeks to the date
    */
-  | ["addWeeks", number]
+  | ['addWeeks', number]
   /**
    * Add the given number of days to the date
    */
-  | ["addDays", number]
+  | ['addDays', number]
   /**
    * Add the given number of hours to the date
    */
-  | ["addHours", number]
+  | ['addHours', number]
   /**
    * Add the given number of minutes to the date
    */
-  | ["addMinutes", number]
+  | ['addMinutes', number]
   /**
    * Add the given number of seconds to the date
    */
-  | ["addSeconds", number]
+  | ['addSeconds', number]
   /**
    * Add the given number of milliseconds to the date
    */
-  | ["addMilliseconds", number];
+  | ['addMilliseconds', number]
 ```
 
 ## `class ParseError extends Error`
