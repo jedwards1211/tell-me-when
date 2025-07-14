@@ -34,37 +34,25 @@ export class ParseState {
     return this.index >= this.end
   }
 
-  /**
-   * If pattern matches the input at the current index, returns the match,
-   * but doesn't advance the index.
-   */
-  peek(pattern: string | RegExp): RegExpExecArray | undefined {
-    if (typeof pattern === 'string') pattern = toRegExp(pattern)
-    pattern = new RegExp(
-      pattern.source,
-      `${this.flags}${pattern.flags.replace(
-        new RegExp(`[${this.flags}]`, 'g'),
-        ''
-      )}`
-    )
-    pattern.lastIndex = this.index
-    const match = pattern.exec(this.input)
-    return match?.index === this.index &&
-      match.index + match[0].length <= this.end
-      ? match
-      : undefined
+  testLowerCase(pattern: string): boolean {
+    if (
+      this.input
+        .substring(this.index, this.index + pattern.length)
+        .toLowerCase() === pattern
+    ) {
+      this.index += pattern.length
+      return true
+    }
+    return false
   }
 
-  /**
-   * If pattern matches the input at the current index, returns the match,
-   * and advances the index to the end of the match.
-   */
-  match(pattern: string | RegExp): RegExpExecArray | undefined {
-    const match = this.peek(pattern)
-    if (match) {
-      this.index += match[0].length
+  testRegex(pattern: RegExp): boolean {
+    pattern.lastIndex = this.index
+    if (pattern.test(this.input)) {
+      this.index = pattern.lastIndex
+      return true
     }
-    return match
+    return false
   }
 }
 

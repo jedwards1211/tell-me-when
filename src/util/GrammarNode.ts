@@ -60,14 +60,16 @@ export abstract class GrammarNode {
       ? new GrammarNodeRef(factor)
       : factor instanceof GrammarNode
       ? factor
-      : new TokenNode(factor)
+      : GrammarNode.token(factor)
   }
 
   /**
    * Matches the given string or regular expression
    */
   static token(token: string | RegExp) {
-    return new TokenNode(token)
+    return token instanceof RegExp
+      ? new RegExpNode(token)
+      : new StringTokenNode(token)
   }
 
   /**
@@ -112,18 +114,35 @@ export class GrammarNodeRef extends GrammarNode {
   }
 }
 
-export class TokenNode extends GrammarNode {
-  constructor(public token: string | RegExp) {
+export class StringTokenNode extends GrammarNode {
+  constructor(public token: string) {
     super()
+    this.token = this.token.toLowerCase()
   }
 
   parse(state: ParseState): ParseNode {
-    const match = state.match(this.token)
-    if (match) {
-      state.index = match.index + match[0].length
-      return new ParseNode(undefined, match.index, state.index)
+    const start = state.index
+    if (state.testLowerCase(this.token)) {
+      return new ParseNode(undefined, start, state.index)
     }
-    return ParseNode.error(state.index)
+    return ParseNode.error(start)
+  }
+}
+
+export class RegExpNode extends GrammarNode {
+  constructor(public token: RegExp) {
+    super()
+    if (!token.sticky) {
+      this.token = new RegExp(token.source, `${token.flags}y`)
+    }
+  }
+
+  parse(state: ParseState): ParseNode {
+    const start = state.index
+    if (state.testRegex(this.token)) {
+      return new ParseNode(undefined, start, state.index)
+    }
+    return ParseNode.error(start)
   }
 }
 
