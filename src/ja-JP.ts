@@ -122,7 +122,7 @@ class DateNode extends EnglishGrammar.DateNode {
     const month = (
       this.find(MonthNameNode) || this.find(EnglishGrammar.MonthNumNode)
     )?.month(input)
-    return month != null ? [['setMonth', month]] : undefined
+    return month != null ? [['setMonth', month, 1]] : undefined
   }
   day(input: string) {
     return this.find(DayOfMonthNode)?.dayOfMonth(input)

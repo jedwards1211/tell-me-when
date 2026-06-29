@@ -92,9 +92,9 @@ export type DateFn =
    */
   | ['setYear', number]
   /**
-   * Set month of date to the given value (0-11)
+   * Set month to the given value (0-11) and optionally date to the given value (1-31)
    */
-  | ['setMonth', number]
+  | ['setMonth', month: number, date?: number]
   /**
    * Set day of month of date to the given value (1-31)
    */

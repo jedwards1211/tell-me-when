@@ -10,7 +10,7 @@ export type DateFn =
   /**
    * Set month of date to the given value (0-11)
    */
-  | ['setMonth', number]
+  | ['setMonth', month: number, date?: number]
   /**
    * Set day of month of date to the given value (1-31)
    */
