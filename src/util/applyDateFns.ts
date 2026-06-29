@@ -19,7 +19,7 @@ export function applyDateFns(
         d.setFullYear(next[1])
         return d
       case 'setMonth':
-        d.setMonth(next[1])
+        d.setMonth(next[1], next[2])
         return d
       case 'setDate':
         d.setDate(next[1])
@@ -41,7 +41,7 @@ export function applyDateFns(
         d.setMilliseconds(next[1])
         return d
       case 'startOfYear':
-        d.setMonth(0)
+        d.setMonth(0, 1)
       // eslint-disable-next-line no-fallthrough
       case 'startOfMonth':
         d.setDate(1)

@@ -61,7 +61,7 @@ export class MonthNumNode extends ParseNode {
 
   dateFns(input: string): DateFn[] {
     return [
-      ['setMonth', this.month(input)],
+      ['setMonth', this.month(input), 1],
       [
         'closestToNow',
         [['if', { afterNow: [['addYears', -1]] }]],
@@ -101,7 +101,7 @@ export class MonthNameNode extends ParseNode {
   dateFns(input: string): DateFn[] {
     const month = this.month(input)
     return [
-      ['setMonth', month],
+      ['setMonth', month, 1],
       [
         'closestToNow',
         [['if', { afterNow: [['addYears', -1]] }]],
@@ -131,7 +131,7 @@ export class RelativeMonthNameNode extends ParseNode {
 
     if (this.find('Next')) {
       return [
-        ['setMonth', month],
+        ['setMonth', month, 1],
         ['startOfMonth'],
         ['if', { beforeNow: [['addYears', 1]] }],
         ['makeInterval', ['addMonths', 1]],
@@ -139,7 +139,7 @@ export class RelativeMonthNameNode extends ParseNode {
     }
     if (this.find('AfterNext')) {
       return [
-        ['setMonth', month],
+        ['setMonth', month, 1],
         ['startOfMonth'],
         ['if', { beforeNow: [['addYears', 1]] }],
         ['addYears', 1],
@@ -148,7 +148,7 @@ export class RelativeMonthNameNode extends ParseNode {
     }
     if (this.find('Last')) {
       return [
-        ['setMonth', month],
+        ['setMonth', month, 1],
         ['startOfMonth'],
         ['addMonths', 1],
         ['if', { afterNow: [['addYears', -1]] }],
@@ -158,7 +158,7 @@ export class RelativeMonthNameNode extends ParseNode {
     }
     if (this.find('BeforeLast')) {
       return [
-        ['setMonth', month],
+        ['setMonth', month, 1],
         ['startOfMonth'],
         ['addMonths', 1],
         ['if', { afterNow: [['addYears', -1]] }],
@@ -424,7 +424,7 @@ export class DateNode extends ParseNode {
     const month = (
       this?.find(MonthNumNode) || this?.find(MonthNameNode)
     )?.month(input)
-    return month != null ? [['setMonth', month]] : undefined
+    return month != null ? [['setMonth', month, 1]] : undefined
   }
   relativeMonthFns(input: string): DateFn[] | undefined {
     return this.find(RelativeMonthNameNode)

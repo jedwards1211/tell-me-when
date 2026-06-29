@@ -13,7 +13,7 @@ export const parseTestcases: Record<
   '202': 'error',
   '2021aug': [
     ['setYear', 2021],
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['startOfMonth'],
     ['makeInterval', ['addMonths', 1]],
   ],
@@ -48,7 +48,7 @@ export const parseTestcases: Record<
 
   '2021aug06': [
     ['setYear', 2021],
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
@@ -90,7 +90,7 @@ export const parseTestcases: Record<
 
   // aug: [['setMonth', 7], ['startOfMonth'], ['makeInterval', ['addMonths', 1]]],
   aug: [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['startOfMonth'],
     [
       'closestToNow',
@@ -106,7 +106,7 @@ export const parseTestcases: Record<
   '08': 'error',
 
   aug1: [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 1],
     ['startOfDay'],
     [
@@ -117,7 +117,7 @@ export const parseTestcases: Record<
     ['makeInterval', ['addDays', 1]],
   ],
   aug2: [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 2],
     ['startOfDay'],
     [
@@ -128,7 +128,7 @@ export const parseTestcases: Record<
     ['makeInterval', ['addDays', 1]],
   ],
   aug3: [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 3],
     ['startOfDay'],
     [
@@ -139,7 +139,7 @@ export const parseTestcases: Record<
     ['makeInterval', ['addDays', 1]],
   ],
   aug4: [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 4],
     ['startOfDay'],
     [
@@ -195,7 +195,7 @@ export const parseTestcases: Record<
 
   'aug 1 2020': [
     ['setYear', 2020],
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 1],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
@@ -376,7 +376,7 @@ export const parseTestcases: Record<
   '1st/aug/2020': { ref: 'aug 1 2020' },
   '1st/aug/20': { ref: 'aug 1 2020' },
   'aug 6 1am': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     [
       'closestToNow',
@@ -387,7 +387,7 @@ export const parseTestcases: Record<
     ['startOfHour'],
   ],
   'aug 6 13:00': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     [
       'closestToNow',
@@ -399,7 +399,7 @@ export const parseTestcases: Record<
     ['startOfMinute'],
   ],
   'aug 6 12am': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     [
       'closestToNow',
@@ -415,7 +415,7 @@ export const parseTestcases: Record<
   '12am aug 6': { ref: 'aug 6 12am' },
   "aug 6 '12 12am": [
     ['setYear', 2012],
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     ['setHours', 0],
     ['startOfHour'],
@@ -428,7 +428,7 @@ export const parseTestcases: Record<
   '1 on aug 6': { ref: 'aug 6 1am' },
   '1am aug 6': { ref: 'aug 6 1am' },
   'aug 6 1:23am': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     [
       'closestToNow',
@@ -451,7 +451,7 @@ export const parseTestcases: Record<
 
   'aug 6 2020 1am': [
     ['setYear', 2020],
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     ['setHours', 1],
     ['startOfHour'],
@@ -464,7 +464,7 @@ export const parseTestcases: Record<
   '1am aug 6 2020': { ref: 'aug 6 2020 1am' },
   'aug 6 2020 1:23am': [
     ['setYear', 2020],
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 6],
     ['setHours', 1],
     ['setMinutes', 23],
@@ -522,7 +522,7 @@ export const parseTestcases: Record<
   '01:59': [['setHours', 1], ['setMinutes', 59], ['startOfMinute']],
   '01:59:60': 'error',
   'aug 9 to sep 8': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 9],
     ['startOfDay'],
     [
@@ -532,7 +532,7 @@ export const parseTestcases: Record<
     ],
     [
       'makeInterval',
-      ['setMonth', 8],
+      ['setMonth', 8, 1],
       ['setDate', 8],
       ['startOfDay'],
       [
@@ -549,7 +549,7 @@ export const parseTestcases: Record<
   'from aug 9 until sep 8': { ref: 'aug 9 to sep 8' },
 
   'aug 9 through sep 8': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 9],
     ['startOfDay'],
 
@@ -560,7 +560,7 @@ export const parseTestcases: Record<
     ],
     [
       'makeInterval',
-      ['setMonth', 8],
+      ['setMonth', 8, 1],
       ['setDate', 8],
       ['startOfDay'],
       [
@@ -574,7 +574,7 @@ export const parseTestcases: Record<
   'from aug 9 through sep 8': { ref: 'aug 9 through sep 8' },
 
   'aug 9 through sep': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 9],
     ['startOfDay'],
     [
@@ -584,7 +584,7 @@ export const parseTestcases: Record<
     ],
     [
       'makeInterval',
-      ['setMonth', 8],
+      ['setMonth', 8, 1],
       ['startOfMonth'],
       [
         'closestToNow',
@@ -598,7 +598,7 @@ export const parseTestcases: Record<
   'from aug 9 through sep': { ref: 'aug 9 through sep' },
 
   'aug 9 to sep': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 9],
     ['startOfDay'],
     [
@@ -608,7 +608,7 @@ export const parseTestcases: Record<
     ],
     [
       'makeInterval',
-      ['setMonth', 8],
+      ['setMonth', 8, 1],
       ['startOfMonth'],
       [
         'closestToNow',
@@ -623,7 +623,7 @@ export const parseTestcases: Record<
   'from aug 9 until sep': { ref: 'aug 9 to sep' },
 
   'aug 9 to sep 13 at 8:25': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 9],
     ['startOfDay'],
     [
@@ -633,7 +633,7 @@ export const parseTestcases: Record<
     ],
     [
       'makeInterval',
-      ['setMonth', 8],
+      ['setMonth', 8, 1],
       ['setDate', 13],
       [
         'closestToNow',
@@ -646,7 +646,7 @@ export const parseTestcases: Record<
     ],
   ],
   'aug 9 3pm to sep 13 at 8:25': [
-    ['setMonth', 7],
+    ['setMonth', 7, 1],
     ['setDate', 9],
     [
       'closestToNow',
@@ -657,7 +657,7 @@ export const parseTestcases: Record<
     ['startOfHour'],
     [
       'makeInterval',
-      ['setMonth', 8],
+      ['setMonth', 8, 1],
       ['setDate', 13],
       [
         'closestToNow',
@@ -865,35 +865,35 @@ export const parseTestcases: Record<
   ],
   'may 26 last year': [
     ['addYears', -1],
-    ['setMonth', 4],
+    ['setMonth', 4, 1],
     ['setDate', 26],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
   'last year may 26': { ref: 'may 26 last year' },
   'may 26 this year': [
-    ['setMonth', 4],
+    ['setMonth', 4, 1],
     ['setDate', 26],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
   'may 26 next year': [
     ['addYears', 1],
-    ['setMonth', 4],
+    ['setMonth', 4, 1],
     ['setDate', 26],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
   'may 26 the year after next': [
     ['addYears', 2],
-    ['setMonth', 4],
+    ['setMonth', 4, 1],
     ['setDate', 26],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
   'may 26 next year at 3pm': [
     ['addYears', 1],
-    ['setMonth', 4],
+    ['setMonth', 4, 1],
     ['setDate', 26],
     ['setHours', 15],
     ['startOfHour'],
@@ -1030,7 +1030,7 @@ export const parseTestcases: Record<
     ['makeInterval', ['setHours', 17], ['startOfHour']],
   ],
   'last june': [
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
     ['addMonths', 1],
     ['if', { afterNow: [['addYears', -1]] }],
@@ -1039,7 +1039,7 @@ export const parseTestcases: Record<
   ],
   'last jun': { ref: 'last june' },
   'june before last': [
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
     ['addMonths', 1],
     ['if', { afterNow: [['addYears', -1]] }],
@@ -1048,21 +1048,21 @@ export const parseTestcases: Record<
     ['makeInterval', ['addMonths', 1]],
   ],
   'next june': [
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
     ['if', { beforeNow: [['addYears', 1]] }],
     ['makeInterval', ['addMonths', 1]],
   ],
   'next jun': { ref: 'next june' },
   'june after next': [
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
     ['if', { beforeNow: [['addYears', 1]] }],
     ['addYears', 1],
     ['makeInterval', ['addMonths', 1]],
   ],
   'next jun 1': [
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
     ['if', { beforeNow: [['addYears', 1]] }],
     ['setDate', 1],
@@ -1071,7 +1071,7 @@ export const parseTestcases: Record<
   ],
   'next jun 1st': { ref: 'next jun 1' },
   'next jun 1st at 8pm': [
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
     ['if', { beforeNow: [['addYears', 1]] }],
     ['setDate', 1],
@@ -1080,26 +1080,26 @@ export const parseTestcases: Record<
   ],
   'jun-aug last year': [
     ['addYears', -1],
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
-    ['makeInterval', ['setMonth', 7], ['startOfMonth']],
+    ['makeInterval', ['setMonth', 7, 1], ['startOfMonth']],
   ],
   'jun-aug 2021': [
     ['setYear', 2021],
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['startOfMonth'],
-    ['makeInterval', ['setMonth', 7], ['startOfMonth']],
+    ['makeInterval', ['setMonth', 7, 1], ['startOfMonth']],
   ],
   'jun 1-aug 3 last year': [
     ['addYears', -1],
-    ['setMonth', 5],
+    ['setMonth', 5, 1],
     ['setDate', 1],
     ['startOfDay'],
-    ['makeInterval', ['setMonth', 7], ['setDate', 3], ['startOfDay']],
+    ['makeInterval', ['setMonth', 7, 1], ['setDate', 3], ['startOfDay']],
   ],
   '10/13/2023 12pm - now': [
     ['setYear', 2023],
-    ['setMonth', 9],
+    ['setMonth', 9, 1],
     ['setDate', 13],
     ['setHours', 12],
     ['startOfHour'],
@@ -1107,7 +1107,7 @@ export const parseTestcases: Record<
   ],
   '10/13/2023 11am - now': [
     ['setYear', 2023],
-    ['setMonth', 9],
+    ['setMonth', 9, 1],
     ['setDate', 13],
     ['setHours', 11],
     ['startOfHour'],
@@ -1115,7 +1115,7 @@ export const parseTestcases: Record<
   ],
   '10/13/2023 12am - now': [
     ['setYear', 2023],
-    ['setMonth', 9],
+    ['setMonth', 9, 1],
     ['setDate', 13],
     ['setHours', 0],
     ['startOfHour'],
@@ -1127,7 +1127,7 @@ export const parseTestcases: Record<
   '2023/10/13 12am to now': { ref: '10/13/2023 12am - now' },
   '10/3/2023 9:00:00 AM to now': [
     ['setYear', 2023],
-    ['setMonth', 9],
+    ['setMonth', 9, 1],
     ['setDate', 3],
     ['setHours', 9],
     ['setMinutes', 0],
@@ -1139,14 +1139,14 @@ export const parseTestcases: Record<
   '10/3/2023,9:00:00 AM to now': { ref: '10/3/2023 9:00:00 AM to now' },
   '2001/10/10': [
     ['setYear', 2001],
-    ['setMonth', 9],
+    ['setMonth', 9, 1],
     ['setDate', 10],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
   '2000/1/1 21:00': [
     ['setYear', 2000],
-    ['setMonth', 0],
+    ['setMonth', 0, 1],
     ['setDate', 1],
     ['setHours', 21],
     ['setMinutes', 0],
@@ -1225,7 +1225,7 @@ export const parseTestcases: Record<
   '2021年8月6日': { ref: '2021aug06' },
   '2021年12月24日': [
     ['setYear', 2021],
-    ['setMonth', 11],
+    ['setMonth', 11, 1],
     ['setDate', 24],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
@@ -1241,14 +1241,14 @@ export const parseTestcases: Record<
   ['二〇〇一年十月十日']: { ref: '2001/10/10' },
   ['二〇二一年十月十一日']: [
     ['setYear', 2021],
-    ['setMonth', 9],
+    ['setMonth', 9, 1],
     ['setDate', 11],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
   ],
   ['二〇二一年十一月二十日']: [
     ['setYear', 2021],
-    ['setMonth', 10],
+    ['setMonth', 10, 1],
     ['setDate', 20],
     ['startOfDay'],
     ['makeInterval', ['addDays', 1]],
